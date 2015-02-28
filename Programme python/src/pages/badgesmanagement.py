@@ -19,7 +19,7 @@ bm_tableau_code = []
 bm_tableau_place = []
 bm_tableau_date = []
 bm_tableau_del = []
-bm_tableau_dela = [0]
+bm_tableau_dela = []
 bm_tableau_height = 0
 bm_tableau_nbline = 0
 
@@ -66,7 +66,7 @@ def bm_init(box):
 	bm_tableau_place = []
 	bm_tableau_date = []
 	bm_tableau_del = []
-	bm_tableau_dela = [0]
+	bm_tableau_dela = []
 	bm_tableau_height = box.winfo_height()-120
 	bm_tableau_nbline = (bm_tableau_height-100)/20
 
@@ -130,10 +130,13 @@ def bm_buttonOutOver(box, id):
 	box.itemconfigure(bm_button_rectangle[id], fill='#2ecc71')
 
 def bm_buttonClick(box, id):
+	global bm_notific
 	if id == 0:
 		add_autorized_badges(bm_entry[0].get(), time.strftime('%d/%m/%Y - %H:%M'), "")
+		bm_notific = "Le code "+bm_entry[0].get()+" a été ajouté."
 	else:
 		add_autorized_badges(bm_entry[1].get(), time.strftime('%d/%m/%Y - %H:%M'), bm_entry[2].get())
+		bm_notific = "Le code "+bm_entry[1].get()+" a été ajouté et lié à la place N°"+bm_entry[2].get()+"."
 
 def bm_notif(box, x, y):
 	if box.winfo_width()<640:
@@ -172,7 +175,7 @@ def bm_createline(box, x, y, style, id, code, place, date, supp):
 	bm_tableau_date.append(box.create_text(largeur*0.75, y+10, text=date, fill="#333333", font="Arial 10 bold"))
 	bm_tableau_del.append(box.create_text(largeur-50, y+10, text=supp, fill="#333333", font="Arial 10 bold"))
 	if id!='ID':
-		bm_tableau_dela.append(box.tag_bind(bm_tableau_del[id+1], '<ButtonRelease-1>', lambda event, box=box, id=code: bm_delClick(box, code)))
+		bm_tableau_dela.append(box.tag_bind(bm_tableau_del[id], '<ButtonRelease-1>', lambda event, box=box, code=code, id=id: bm_delClick(box, code, id)))
 
 def bm_updateline(box, style, id, code, place, date, supp):
 	if style==0:
@@ -190,21 +193,16 @@ def bm_updateline(box, style, id, code, place, date, supp):
 	box.itemconfigure(bm_tableau_del[id+1], text=supp)
 
 def bm_deleteline(box, id):
-	print(id)
-	#box.delete(bm_tableau_rectangle[id+1])
-	#box.delete(bm_tableau_id[id+1])
-	#box.delete(bm_tableau_code[id+1])
-	#box.delete(bm_tableau_place[id+1])
-	#box.delete(bm_tableau_date[id+1])
-	#box.delete(bm_tableau_del[id+1])
-	#box.unbind("<ButtonRelease-1>", bm_tableau_del[id+1])
 	box.delete(bm_tableau_rectangle[id])
 	box.delete(bm_tableau_id[id])
 	box.delete(bm_tableau_code[id])
 	box.delete(bm_tableau_place[id])
 	box.delete(bm_tableau_date[id])
 	box.delete(bm_tableau_del[id])
-	box.unbind("<ButtonRelease-1>", bm_tableau_dela[id])
+	try:
+		box.unbind("<ButtonRelease-1>", bm_tableau_dela[id-1])
+	except:
+		print("un bug a eu lieu avec unbind can't delete tcl command ( badgesmanagement.py )")
 	del bm_tableau_rectangle[-1]
 	del bm_tableau_id[-1]
 	del bm_tableau_code[-1]
@@ -212,12 +210,13 @@ def bm_deleteline(box, id):
 	del bm_tableau_date[-1]
 	del bm_tableau_del[-1]
 
-def bm_delClick(box, code):
-	del_autorized_badges(code)
+def bm_delClick(box, code, id):
+	global bm_notific
+	del_autorized_badges(code, id)
+	bm_notific = "Le code "+code+" a été supprimé."
 
 def bm_createtableau(box, x, y):
 	a = 0
-	#while a<bm_tableau_nbline:
 	while a<get_autorized_badges('size', 1):
 		if a%2==0:
 			bm_createline(box, x, y+20*(a+1), 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
@@ -225,51 +224,38 @@ def bm_createtableau(box, x, y):
 			bm_createline(box, x, y+20*(a+1), 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
 		a += 1
 
-def bm_updatedatatableau(box):
-	print(get_checking_var("bm_nb_badges"))
-	if get_checking_var("bm_nb_badges")<get_autorized_badges('size', 1): # insert
-		print('a')
-		a = get_checking_var("bm_nb_badges")
+def bm_updatedatatableau(box, nbbadges):
+	if nbbadges<get_autorized_badges('size', 1): # insert
+		print("Ajoute un badge")
+		a = nbbadges
 		while a<get_autorized_badges('size', 1):
-			bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*(a+1), 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
+			if get_autorized_badges('size', 1)%2==0:
+				bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*(a+1), 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
+			else:
+				bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*(a+1), 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
 			a += 1
-	elif get_checking_var("bm_nb_badges")>=get_autorized_badges('size', 1): # delete
-		print('b')
-		print( str(get_checking_var("bm_nb_badges"))+' | '+str(get_autorized_badges('size', 1)) )
-		a = get_checking_var("bm_nb_badges")
-		while a>=get_autorized_badges('size', 1): 
+	elif nbbadges>get_autorized_badges('size', 1): # delete
+		print("Supprime un badge")
+		a = nbbadges
+		while a>get_autorized_badges('size', 1): 
 			bm_deleteline(box, a)
 			a -= 1
 		a = 0
 		while a<get_autorized_badges('size', 1):
-			bm_updateline(box, 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
+			if a%2==0:
+				bm_updateline(box, 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
+			else:
+				bm_updateline(box, 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
 			a += 1
 	else: # update
-		print('c')
+		print("Met a jour un badge")
 		a = 0
-		while a<get_autorized_badges('size', 1):
-			bm_updateline(box, 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
-			a += 1
-	'''
-	a = 0
-	#print(get_autorized_badges('size', 1))
-	while a<get_autorized_badges('size', 1):
-		if a%2==0:
-			if a>=len(bm_tableau_del)-1: # create
-				bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*(a+1), 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
-			#elif a<len(bm_tableau_del)-1:
-			#	bm_deleteline(box, a)
-			else: # update
+		while a<get_autorized_badges('size', 1)-1:
+			if a%2==0:
 				bm_updateline(box, 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
-		else:
-			if a>=len(bm_tableau_del)-1: # create
-				bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*(a+1), 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
-			#elif a<len(bm_tableau_del)-1:
-			#	bm_deleteline(box, a)
-			else: # update
+			else:
 				bm_updateline(box, 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
-		a += 1
-	'''
+			a += 1
 
 def bm_updatetableau(box):
 	'''
@@ -307,10 +293,12 @@ update
 def bm_update(box, command=1):
 	if command==1: # une variable change
 		if get_checking_var("seconde") != None:
-			if get_checking_var('seconde')!=get_autorized_badges('seconde', 0): # update de la listbox
+			if get_checking_var('seconde')!=get_autorized_badges('seconde', 0) or get_checking_var('bm_nb_badges')!=get_autorized_badges('size', 1): # update de la listbox
 				set_checking_var("seconde", get_autorized_badges('seconde', 0))
-				bm_updatedatatableau(box)
+				a = get_checking_var('bm_nb_badges')
 				set_checking_var("bm_nb_badges", get_autorized_badges('size', 1))
+				bm_updatedatatableau(box, a)
+				bm_notif_update(box)
 		else:
 			set_checking_var("seconde", get_autorized_badges('seconde', 0))
 			set_checking_var("bm_nb_badges", get_autorized_badges('size', 1))

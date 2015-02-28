@@ -26,6 +26,11 @@ class content:
 		self.menu = get_selected_menu()
 		self.submenu = get_selected_submenu()
 		self.content.bind('<Configure>', self.varchange_resize)
+		
+		set_checking_var("pm_p_active", places_active().count(0))
+		set_checking_var("pm_p_dispo", places_dispo().count(0))
+		set_checking_var("bm_nb_badges", get_autorized_badges('size', 1))
+		set_checking_var("seconde", last_places('seconde', 0))
 
 	def varchange_resize(self, event):
 		self.make_content(2)

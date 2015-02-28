@@ -239,11 +239,13 @@ def get_autorized_badges(par, id):
 
 def add_autorized_badges(code, dateheure, place):
 	global last_seconde
+	global listcode
 	a = 0
 	b = 0
 	while a<get_autorized_badges('size', 0):
 		if code==get_autorized_badges('code', a):
 			#print(get_autorized_badges('code', a))
+			listcode[a] = (len(listcode)-1, code, dateheure, place)
 			iud_badge(1, code, dateheure, place)
 			b = 1
 			a = len(listcode)
@@ -254,8 +256,10 @@ def add_autorized_badges(code, dateheure, place):
 		iud_badge(0, code, dateheure, place)
 	last_seconde = time.strftime('%H:%M:%S')
 
-def del_autorized_badges(code):
+def del_autorized_badges(code, id):
 	global last_seconde
+	global listcode
+	listcode.remove(listcode[id])
 	iud_badge(2, code)
 	last_seconde = time.strftime('%H:%M:%S')
 
@@ -354,7 +358,7 @@ def load_badge():
 	cursor.execute("SELECT * FROM badges WHERE badges_active=1")
 	global listcode
 	listcode = cursor.fetchall()
-	#print(listcode)
+	print("nombre d'entree dans la ddb : "+str(len(listcode)))
 
 def iud_badge(command, code=0, dateheure=0, place=0):
 	if command==0:
@@ -362,7 +366,8 @@ def iud_badge(command, code=0, dateheure=0, place=0):
 	elif command==1:
 		cursor.execute("UPDATE badges SET badges_dateheure = ?, badges_place = ?, badges_active = ? WHERE badges_code = ? and badges_active = ? ", (dateheure, place, 1, code, 1))
 	elif command==2:
-		cursor.execute("UPDATE badges SET badges_active = ? WHERE badges_code = ?", (0, code))
+		#cursor.execute("UPDATE badges SET badges_active = ? WHERE badges_code = ? and badges_active = ?", (0, code, 1))
+		cursor.execute("DELETE FROM badges WHERE badges_code = ?;", (code))
 	
 	connexion.commit()
 

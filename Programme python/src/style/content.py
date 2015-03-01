@@ -29,7 +29,12 @@ class content:
 		
 		set_checking_var("pm_p_active", places_active().count(0))
 		set_checking_var("pm_p_dispo", places_dispo().count(0))
+		
 		set_checking_var("bm_nb_badges", get_autorized_badges('size', 1))
+		set_checking_var("bm_page_select", 0)
+		set_checking_var("bm_page_select_old", 0)
+		set_checking_var("bm_notific", "Aucune notification")
+
 		set_checking_var("seconde", last_places('seconde', 0))
 
 	def varchange_resize(self, event):

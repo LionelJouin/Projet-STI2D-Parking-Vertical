@@ -4,6 +4,7 @@ import socket
 import sqlite3
 
 from tkinter import *
+from math import *
 
 screen_w = screen_h = width_pxl = height_pxl = pos_x = pos_y = 0
 width_percent = height_percent = 80
@@ -155,7 +156,7 @@ def set_place_dispo(id, etat, code, db=None):
 			place_codes[id] = code
 		else:
 			place_codes[id] = ""
-	if checking_var['chargement']==1 and  db==None:
+	if checking_var['chargement']==1 and db==None:
 		update_place(id, place_codes[id], place_dispo[id], place_predef[id], place_active[id])
 
 def places_dispo():
@@ -169,8 +170,16 @@ def set_place_predef(id, etat, code, db=None):
 	if etat==1:
 		set_place_active(id, 1, 1)
 	place_predef[id] = etat
-	if checking_var['chargement']==1 and  db==None:
-		update_place(id, place_codes[id], place_dispo[id], place_predef[id], place_active[id])
+	place_codes[id] = code
+	if checking_var['chargement']==1 and db==None:
+		if etat==0:
+			if is_place_dispo(id)==0:
+				update_place(id, place_codes[id], place_dispo[id], place_predef[id], place_active[id])
+			else:
+				place_codes[id] = ""
+				update_place(id, "", place_dispo[id], 0, place_active[id])
+		else:
+			update_place(id, place_codes[id], place_dispo[id], place_predef[id], place_active[id])
 
 def places_predef():
 	return(place_predef)
@@ -236,30 +245,62 @@ def get_autorized_badges(par, id):
 		return(len(listcode))
 	elif par=='seconde':
 		return(last_seconde)
+	elif par=='nbpage':
+		return(ceil(len(listcode)/15))
 
 def add_autorized_badges(code, dateheure, place):
 	global last_seconde
 	global listcode
-	a = 0
-	b = 0
-	while a<get_autorized_badges('size', 0):
-		if code==get_autorized_badges('code', a):
-			#print(get_autorized_badges('code', a))
-			listcode[a] = (len(listcode)-1, code, dateheure, place)
-			iud_badge(1, code, dateheure, place)
-			b = 1
-			a = len(listcode)
-		a += 1
-	if b == 0:
-		listcode.append((len(listcode), code, dateheure, place))
-		#print(listcode)
-		iud_badge(0, code, dateheure, place)
+	c = 0
+	d = 0
+	if place!="":
+		if is_place_dispo(place)==1:
+			while c<get_autorized_badges('size', 0):
+				if place==get_autorized_badges('place', c):
+					set_checking_var("bm_notific", "La place N°"+str(place)+" est déjà occupé par le code "+get_autorized_badges('code', c)+".")
+					c = len(listcode)
+					d = 1
+				c += 1
+		else:
+			set_checking_var("bm_notific", "La place N°"+str(place)+" doit être libre pour pour effectuer cette action.")
+			d = 1
+	if d==0:
+		a = 0
+		b = 0
+		while a<get_autorized_badges('size', 0):
+			if code==get_autorized_badges('code', a):
+				listcode[a] = (len(listcode)-1, code, dateheure, place)
+				iud_badge(1, code, dateheure, place)
+				b = 1
+				a = len(listcode)
+				if place=="":
+					if code in place_codes:
+						set_place_predef(place_codes.index(code), 0, code)
+					#set_place_predef(place, 0, code)
+					set_checking_var("bm_notific", "Le code "+str(code)+" a été mis à jour.")
+				else:
+					set_place_predef(place, 1, code)
+					set_checking_var("bm_notific", "Le code "+str(code)+" a été mis à jour et lié à la place N°"+str(place)+".")
+			a += 1
+		if b == 0:
+			listcode.append((len(listcode), code, dateheure, place))
+			iud_badge(0, code, dateheure, place)
+			if place=="":
+				if code in place_codes:
+					set_place_predef(place_codes.index(code), 0, code)
+				#set_place_predef(place, 0, code)
+				set_checking_var("bm_notific", "Le code "+str(code)+" a été ajouté.")
+			else:
+				set_place_predef(place, 1, code)
+				set_checking_var("bm_notific", "Le code "+str(code)+" a été ajouté et lié à la place N°"+str(place)+".")
 	last_seconde = time.strftime('%H:%M:%S')
 
 def del_autorized_badges(code, id):
 	global last_seconde
 	global listcode
-	listcode.remove(listcode[id])
+	set_place_predef(get_autorized_badges('place', id), 0, '')
+	if id<get_autorized_badges('size', 0): # resolution d'un bug de suppression quand double clic sur croix de suppression
+		listcode.remove(listcode[id])
 	iud_badge(2, code)
 	last_seconde = time.strftime('%H:%M:%S')
 
@@ -358,7 +399,6 @@ def load_badge():
 	cursor.execute("SELECT * FROM badges WHERE badges_active=1")
 	global listcode
 	listcode = cursor.fetchall()
-	print("nombre d'entree dans la ddb : "+str(len(listcode)))
 
 def iud_badge(command, code=0, dateheure=0, place=0):
 	if command==0:
@@ -366,8 +406,8 @@ def iud_badge(command, code=0, dateheure=0, place=0):
 	elif command==1:
 		cursor.execute("UPDATE badges SET badges_dateheure = ?, badges_place = ?, badges_active = ? WHERE badges_code = ? and badges_active = ? ", (dateheure, place, 1, code, 1))
 	elif command==2:
-		#cursor.execute("UPDATE badges SET badges_active = ? WHERE badges_code = ? and badges_active = ?", (0, code, 1))
-		cursor.execute("DELETE FROM badges WHERE badges_code = ?;", (code))
+		cursor.execute("UPDATE badges SET badges_active = ? WHERE badges_code = ? and badges_active = ?", (0, code, 1))
+		#cursor.execute("DELETE FROM badges WHERE badges_code = ?", (code))
 	
 	connexion.commit()
 

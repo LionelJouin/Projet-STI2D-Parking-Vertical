@@ -12,16 +12,18 @@ bm_button_text = []
 bm_button_rect = []
 bm_notif_rect = []
 bm_notif_text = []
-bm_notific = "Aucune notification"
 bm_tableau_rectangle = []
 bm_tableau_id = []
 bm_tableau_code = []
 bm_tableau_place = []
 bm_tableau_date = []
 bm_tableau_del = []
-bm_tableau_dela = []
+bm_tableau_dela = [0]
 bm_tableau_height = 0
 bm_tableau_nbline = 0
+bm_pagination_rect = []
+bm_pagination_rectangle = []
+bm_pagination_text = []
 
 bm_notif_posx = 5
 bm_notif_posy = 70
@@ -31,6 +33,9 @@ bm_tableau_posy = 120
 def bm_init(box):
 
 	set_checking_var("bm_nb_badges", get_autorized_badges('size', 1))
+	set_checking_var("bm_page_select", 0)
+	set_checking_var("bm_page_select_old", 0)
+	set_checking_var("bm_notific", "Aucune notification")
 	set_checking_var("seconde", last_places('seconde', 0))
 
 	global bm_entry
@@ -41,7 +46,6 @@ def bm_init(box):
 	global bm_button_rect
 	global bm_notif_rect
 	global bm_notif_text
-	global bm_notific
 	global bm_tableau_rectangle
 	global bm_tableau_id
 	global bm_tableau_code
@@ -51,6 +55,9 @@ def bm_init(box):
 	global bm_tableau_dela
 	global bm_tableau_height
 	global bm_tableau_nbline
+	global bm_pagination_rect
+	global bm_pagination_rectangle
+	global bm_pagination_text
 	bm_entry = []
 	bm_entry_val = []
 	bm_label = []
@@ -59,16 +66,18 @@ def bm_init(box):
 	bm_button_rect = []
 	bm_notif_rect = []
 	bm_notif_text = []
-	bm_notific = "Aucune notification"
 	bm_tableau_rectangle = []
 	bm_tableau_id = []
 	bm_tableau_code = []
 	bm_tableau_place = []
 	bm_tableau_date = []
 	bm_tableau_del = []
-	bm_tableau_dela = []
+	bm_tableau_dela = [0]
 	bm_tableau_height = box.winfo_height()-120
 	bm_tableau_nbline = (bm_tableau_height-100)/20
+	bm_pagination_rect = []
+	bm_pagination_rectangle = []
+	bm_pagination_text = []
 
 	# formulaire
 	bm_formulaires_a(box, 0, 5, 5)
@@ -83,6 +92,8 @@ def bm_init(box):
 	bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*0, 0, "ID", "Code d'Accès", "Place", "Date et heure d'ajout", "Supprimer")
 	bm_createtableau(box, bm_tableau_posx, bm_tableau_posy)
 
+	bm_createpagination(box,0 ,bm_tableau_posx, bm_tableau_posy+330, "<")
+	bm_createpagination(box,1 ,bm_tableau_posx+35, bm_tableau_posy+330, ">")
 
 '''
 --------------------------------------------------------------------------------------
@@ -130,13 +141,18 @@ def bm_buttonOutOver(box, id):
 	box.itemconfigure(bm_button_rectangle[id], fill='#2ecc71')
 
 def bm_buttonClick(box, id):
-	global bm_notific
 	if id == 0:
-		add_autorized_badges(bm_entry[0].get(), time.strftime('%d/%m/%Y - %H:%M'), "")
-		bm_notific = "Le code "+bm_entry[0].get()+" a été ajouté."
+		if len(bm_entry[0].get())==10:
+			add_autorized_badges(bm_entry[0].get(), time.strftime('%d/%m/%Y - %H:%M'), "")
+		else:
+			set_checking_var("bm_notific", "Le code "+str(bm_entry[0].get())+" n'est pas valide.")
+			set_checking_var("seconde", "00")
 	else:
-		add_autorized_badges(bm_entry[1].get(), time.strftime('%d/%m/%Y - %H:%M'), bm_entry[2].get())
-		bm_notific = "Le code "+bm_entry[1].get()+" a été ajouté et lié à la place N°"+bm_entry[2].get()+"."
+		if int(bm_entry[2].get())<16 and int(bm_entry[2].get())>=0 and len(bm_entry[1].get())==10:
+			add_autorized_badges(bm_entry[1].get(), time.strftime('%d/%m/%Y - %H:%M'), int(bm_entry[2].get()))
+		else:
+			set_checking_var("seconde", "00")
+			set_checking_var("bm_notific", "Le code "+str(bm_entry[1].get())+" n'a pas pu etre ajouté, ni lié à la place N°"+str(bm_entry[2].get())+".")
 
 def bm_notif(box, x, y):
 	if box.winfo_width()<640:
@@ -144,11 +160,11 @@ def bm_notif(box, x, y):
 	else :
 		largeur = box.winfo_width()
 	bm_notif_rect.append(box.create_rectangle(x, y, largeur-x*2, y+40, fill='#FFB74D', width=0))
-	bm_notif_text.append(box.create_text(largeur/2, y+20, text=bm_notific, fill="#ecf0f1", font="Arial 16"))
+	bm_notif_text.append(box.create_text(largeur/2, y+20, text=get_checking_var('bm_notific'), fill="#ecf0f1", font="Arial 16"))
 
 def bm_notif_update(box):
 	if box.winfo_width()>640:
-		box.itemconfigure(bm_notif_text[0], text=bm_notific)
+		box.itemconfigure(bm_notif_text[0], text=get_checking_var('bm_notific'))
 		box.coords(bm_notif_rect[0], bm_notif_posx, bm_notif_posy, box.winfo_width()-bm_notif_posx*2, bm_notif_posy+40)
 		box.coords(bm_notif_text[0], box.winfo_width()/2, bm_notif_posy+20)
 
@@ -175,105 +191,64 @@ def bm_createline(box, x, y, style, id, code, place, date, supp):
 	bm_tableau_date.append(box.create_text(largeur*0.75, y+10, text=date, fill="#333333", font="Arial 10 bold"))
 	bm_tableau_del.append(box.create_text(largeur-50, y+10, text=supp, fill="#333333", font="Arial 10 bold"))
 	if id!='ID':
-		bm_tableau_dela.append(box.tag_bind(bm_tableau_del[id], '<ButtonRelease-1>', lambda event, box=box, code=code, id=id: bm_delClick(box, code, id)))
+		bm_tableau_dela.append(box.tag_bind(bm_tableau_del[id+1], '<ButtonRelease-1>', lambda event, box=box, code=code, id=id: bm_delClick(box, code, id)))
 
 def bm_updateline(box, style, id, code, place, date, supp):
+	ida = id+1-15*get_checking_var('bm_page_select')
 	if style==0:
-		box.itemconfigure(bm_tableau_rectangle[id+1], fill='#9E9E9E', width=0)
+		box.itemconfigure(bm_tableau_rectangle[ida], fill='#9E9E9E', width=0)
 	elif style==1:
-		box.itemconfigure(bm_tableau_rectangle[id+1], fill='#EEEEEE', width=0)
+		box.itemconfigure(bm_tableau_rectangle[ida], fill='#EEEEEE', width=0)
 	elif style==2:
-		box.itemconfigure(bm_tableau_rectangle[id+1], fill='#E0E0E0', width=0)
+		box.itemconfigure(bm_tableau_rectangle[ida], fill='#E0E0E0', width=0)
 	else:
 		pass
-	box.itemconfigure(bm_tableau_id[id+1], text=id)
-	box.itemconfigure(bm_tableau_code[id+1], text=code)
-	box.itemconfigure(bm_tableau_place[id+1], text=place)
-	box.itemconfigure(bm_tableau_date[id+1], text=date)
-	box.itemconfigure(bm_tableau_del[id+1], text=supp)
-
-def bm_deleteline(box, id):
-	box.delete(bm_tableau_rectangle[id])
-	box.delete(bm_tableau_id[id])
-	box.delete(bm_tableau_code[id])
-	box.delete(bm_tableau_place[id])
-	box.delete(bm_tableau_date[id])
-	box.delete(bm_tableau_del[id])
+	box.itemconfigure(bm_tableau_id[ida], text=id)
+	box.itemconfigure(bm_tableau_code[ida], text=code)
+	box.itemconfigure(bm_tableau_place[ida], text=place)
+	box.itemconfigure(bm_tableau_date[ida], text=date)
+	box.itemconfigure(bm_tableau_del[ida], text=supp)
 	try:
-		box.unbind("<ButtonRelease-1>", bm_tableau_dela[id-1])
+		box.unbind("<ButtonRelease-1>", bm_tableau_dela[ida])
 	except:
 		print("un bug a eu lieu avec unbind can't delete tcl command ( badgesmanagement.py )")
-	del bm_tableau_rectangle[-1]
-	del bm_tableau_id[-1]
-	del bm_tableau_code[-1]
-	del bm_tableau_place[-1]
-	del bm_tableau_date[-1]
-	del bm_tableau_del[-1]
-
-def bm_delClick(box, code, id):
-	global bm_notific
-	del_autorized_badges(code, id)
-	bm_notific = "Le code "+code+" a été supprimé."
+	bm_tableau_dela[ida] = box.tag_bind(bm_tableau_del[ida], '<ButtonRelease-1>', lambda event, box=box, code=code, id=id: bm_delClick(box, code, id))
 
 def bm_createtableau(box, x, y):
-	a = 0
-	while a<get_autorized_badges('size', 1):
-		if a%2==0:
-			bm_createline(box, x, y+20*(a+1), 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
+	bm_page_select = get_checking_var('bm_page_select')
+	a = 15*bm_page_select 
+	b = 15*(bm_page_select+1)
+	while a<b:
+		if a<get_autorized_badges('size', 1):
+			if a%2==0:
+				bm_createline(box, x, y+20*(a+1), 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
+			else:
+				bm_createline(box, x, y+20*(a+1), 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
 		else:
-			bm_createline(box, x, y+20*(a+1), 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
+			if a%2==0:
+				bm_createline(box, x, y+20*(a+1), 1, a, "", "", "", "")
+			else:
+				bm_createline(box, x, y+20*(a+1), 2, a, "", "", "", "")
 		a += 1
 
 def bm_updatedatatableau(box, nbbadges):
-	if nbbadges<get_autorized_badges('size', 1): # insert
-		print("Ajoute un badge")
-		a = nbbadges
-		while a<get_autorized_badges('size', 1):
-			if get_autorized_badges('size', 1)%2==0:
-				bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*(a+1), 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
-			else:
-				bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*(a+1), 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
-			a += 1
-	elif nbbadges>get_autorized_badges('size', 1): # delete
-		print("Supprime un badge")
-		a = nbbadges
-		while a>get_autorized_badges('size', 1): 
-			bm_deleteline(box, a)
-			a -= 1
-		a = 0
-		while a<get_autorized_badges('size', 1):
+	bm_page_select = get_checking_var('bm_page_select')
+	a = 15*bm_page_select 
+	b = 15*(bm_page_select+1)
+	while a<b:
+		if a<get_autorized_badges('size', 1):
 			if a%2==0:
 				bm_updateline(box, 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
 			else:
 				bm_updateline(box, 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
-			a += 1
-	else: # update
-		print("Met a jour un badge")
-		a = 0
-		while a<get_autorized_badges('size', 1)-1:
+		else:
 			if a%2==0:
-				bm_updateline(box, 1, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
+				bm_updateline(box, 1, a, "", "", "", "")
 			else:
-				bm_updateline(box, 2, a, get_autorized_badges('code', a), get_autorized_badges('place', a), get_autorized_badges('dateheure', a), "X")
-			a += 1
+				bm_updateline(box, 2, a, "", "", "", "")
+		a += 1
 
 def bm_updatetableau(box):
-	'''
-	global bm_tableau_height
-	global bm_tableau_nbline
-	tabheight = bm_tableau_height
-	nbline = bm_tableau_nbline
-	bm_tableau_height = box.winfo_height()-120
-	bm_tableau_nbline = (bm_tableau_height-100)/20
-
-	if tabheight>bm_tableau_height: # on supprime des elements
-		if int(nbline)>int(bm_tableau_nbline):
-			deleteline(box, int(nbline)+1)
-		#print(str(int(nbline))+" | "+str(int(bm_tableau_nbline)))
-	elif tabheight<bm_tableau_height: # on ajoute des elements
-		if int(nbline)<int(bm_tableau_nbline):
-			bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*(int(nbline)), 1, int(nbline)-1, "0000000000", "", "25/02/2015 - 16:57", "X")
-	'''
 	if box.winfo_width()>640:
 		a = 0
 		while a<len(bm_tableau_rectangle):
@@ -286,6 +261,41 @@ def bm_updatetableau(box):
 			a += 1
 
 
+def bm_delClick(box, code, id):
+	del_autorized_badges(code, id)
+	set_checking_var("bm_notific", "Le code "+str(code)+" a été supprimé.")
+
+def bm_createpagination(box, id, x, y, text):	
+	global bm_pagination_rect
+	global bm_pagination_rectangle
+	global bm_pagination_text
+
+	bm_pagination_rectangle.append(box.create_rectangle(x, y, x+30, y+26, fill='#2ecc71', width=0))
+	bm_pagination_text.append(box.create_text(x+15, y+13, text=text, fill="#ecf0f1", font="Arial 20"))
+	bm_pagination_rect.append(box.create_rectangle(x, y, x+30, y+25, width=0))
+
+	box.tag_bind(bm_pagination_rect[id], '<Enter>', lambda event, box=box, id=id: bm_paginationOver(box, id)) 
+	box.tag_bind(bm_pagination_rect[id], '<Leave>', lambda event, box=box, id=id: bm_paginationOutOver(box, id)) 
+	box.tag_bind(bm_pagination_rect[id], '<ButtonRelease-1>', lambda event, box=box, id=id: bm_paginationClick(box, id))
+
+def bm_paginationOver(box, id):
+	box.itemconfigure(bm_pagination_rectangle[id], fill='#27ae60')
+
+def bm_paginationOutOver(box, id):
+	box.itemconfigure(bm_pagination_rectangle[id], fill='#2ecc71')
+
+def bm_paginationClick(box, id):
+	if id==0:
+		if get_checking_var('bm_page_select')==0 or get_autorized_badges('nbpage', 1)==0:
+			pass
+		else:
+			set_checking_var("bm_page_select", get_checking_var('bm_page_select')-1)
+	else:
+		if get_checking_var('bm_page_select')+1==get_autorized_badges('nbpage', 1) or get_autorized_badges('nbpage', 1)==0:
+			pass
+		else:
+			set_checking_var("bm_page_select", get_checking_var('bm_page_select')+1)
+
 '''
 --------------------------------------------------------------------------------------
 update
@@ -293,22 +303,25 @@ update
 def bm_update(box, command=1):
 	if command==1: # une variable change
 		if get_checking_var("seconde") != None:
-			if get_checking_var('seconde')!=get_autorized_badges('seconde', 0) or get_checking_var('bm_nb_badges')!=get_autorized_badges('size', 1): # update de la listbox
+			if get_checking_var('seconde')!=get_autorized_badges('seconde', 0) or get_checking_var('bm_nb_badges')!=get_autorized_badges('size', 1) or get_checking_var('bm_page_select')!=get_checking_var('bm_page_select_old'): # update de la listbox
 				set_checking_var("seconde", get_autorized_badges('seconde', 0))
 				a = get_checking_var('bm_nb_badges')
 				set_checking_var("bm_nb_badges", get_autorized_badges('size', 1))
 				bm_updatedatatableau(box, a)
 				bm_notif_update(box)
+				set_checking_var("bm_page_select_old", get_checking_var('bm_page_select'))
 		else:
 			set_checking_var("seconde", get_autorized_badges('seconde', 0))
 			set_checking_var("bm_nb_badges", get_autorized_badges('size', 1))
+			set_checking_var("bm_page_select", 0)
+			set_checking_var("bm_page_select_old", 0)
 	elif command==2: # la taille de la fenetre change
 		bm_notif_update(box)
 		bm_updatetableau(box)
 	else:
 		pass
-'''
 
+'''
 --------------------------------------------------------------------------------------
 delete
 '''

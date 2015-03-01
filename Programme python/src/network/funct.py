@@ -39,9 +39,10 @@ def se_connecter(ip, port):
 		while is_connectedtosystem()==1:
 			try:
 				data = s.recv(1024)
-				print("-------------------------------------")
-				print("Données recu : ", str(data, 'utf-8'))
-				print("-------------------------------------")
+				if str(data, 'utf-8')!='0000':
+					print("-------------------------------------")
+					print("Données recu : ", str(data, 'utf-8'))
+					print("-------------------------------------")
 				recevoir = str(data, 'utf-8')
 				if recevoir[0]=="U":
 					code = recevoir[1:]
@@ -62,6 +63,11 @@ def se_connecter(ip, port):
 					place = int(recevoir[1:])
 				elif recevoir[0]=="s":
 					entrantsortant = int(recevoir[1])
+				elif recevoir[0]=="R":
+					if recevoir[1]=="0":
+						load_config()
+					else:
+						pass
 			#except:
 			except Exception as e:
 				print(str(e))

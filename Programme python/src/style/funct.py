@@ -108,6 +108,19 @@ def envoyer(msg):
 	if is_connectedtosystem()==1:
 		sock.send(msg.encode('ascii'))
 
+def load_config():
+	a = 0
+	while a<15:
+		#if place_dispo[a]==0:
+		#	envoyer(''+)
+		if place_predef[a]==1:
+			time.sleep(0.2)
+			envoyer( 'W'+str(place_codes[a])+str(a) )
+		if place_active[a]==0:
+			time.sleep(0.2)
+			envoyer( 'y'+str(a) )
+		a += 1
+
 '''
 ------------------------------------------------------
 gestion

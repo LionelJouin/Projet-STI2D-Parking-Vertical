@@ -74,6 +74,9 @@ def se_connecter(ip, port):
 		s.close()
 
 	except:
+		print("|||||||||||||||||||||||||||||||||||||")
+		print("KOUKOU 2")
+		print("|||||||||||||||||||||||||||||||||||||")
 		if_connectedtosystem(0)
 
 # U : code rentre                  			U0100B87A09

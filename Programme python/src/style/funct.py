@@ -170,7 +170,6 @@ def set_place_predef(id, etat, code, db=None):
 	if etat==1:
 		set_place_active(id, 1, 1)
 	place_predef[id] = etat
-	place_codes[id] = code
 	if checking_var['chargement']==1 and db==None:
 		if etat==0:
 			if is_place_dispo(id)==0:
@@ -179,6 +178,7 @@ def set_place_predef(id, etat, code, db=None):
 				place_codes[id] = ""
 				update_place(id, "", place_dispo[id], 0, place_active[id])
 		else:
+			place_codes[id] = code
 			update_place(id, place_codes[id], place_dispo[id], place_predef[id], place_active[id])
 
 def places_predef():

@@ -111,13 +111,14 @@ def envoyer(msg):
 def load_config():
 	a = 0
 	while a<15:
-		#if place_dispo[a]==0:
-		#	envoyer(''+)
+		if place_dispo[a]==0:
+			time.sleep(0.05)
+			envoyer('V'+str(place_codes[a])+str(a))
 		if place_predef[a]==1:
-			time.sleep(0.2)
+			time.sleep(0.05)
 			envoyer( 'W'+str(place_codes[a])+str(a) )
 		if place_active[a]==0:
-			time.sleep(0.2)
+			time.sleep(0.05)
 			envoyer( 'y'+str(a) )
 		a += 1
 

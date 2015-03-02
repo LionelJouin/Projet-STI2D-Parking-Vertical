@@ -22,7 +22,7 @@ s.listen(5) # nombre maximum de client
 # x : Desactiver le parking                         x
 # W : Associer un badge a une place                 W0100b87a0912
 # w : Enlever l'association d'un badge a une place  w0100b87a0912
-# V : test envoie cote arduino | reception cote 
+# V : Place prise                                   V0100b87a0912
 
 # RECEVOIR
 # U : code rentre                  			U0100B87A09
@@ -54,8 +54,8 @@ s.listen(5) # nombre maximum de client
 0000f5b69
 0101a2c26
 '''
-listcode = ['0100b87a09', '0000c2f7ee', '0001f2f00', '1111c3a56', '1010a5c89', '1100b9b96', '1110e6d23', '1001f5e12', '0001f2f35', '1100a3c01', '1111a6c25', '0000b5d21', '0001d9e55', '0100c1f65', '0110d0a36']
-listcode_f = ['0010e5b22', '1110f6f99', '0000f5b69', '0101a2c26']
+listcode = ['0100b87a09', '0000c2f7ee', '00010f2f00', '1111c3a56', '10010a5c89', '11000b9b96', '11010e6d23', '10001f5e12', '00001f2f35', '11000a3c01', '11110a6c25', '00000b5d21', '00001d9e55', '01000c1f65', '00110d0a36']
+listcode_f = ['00100e5b22', '11100f6f99', '00000f5b69', '01001a2c26']
 
 (conn, addr) = s.accept()
 print(addr[0]+':'+str(addr[1])+' vient de se connecté')

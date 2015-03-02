@@ -26,7 +26,7 @@ s.listen(5) # nombre maximum de client
 # x : Desactiver le parking                         x
 # W : Associer un badge a une place                 W0100b87a0912
 # w : Enlever l'association d'un badge a une place  w0100b87a0912
-# V : test envoie cote arduino | reception cote 
+# V : Place prise                                   V0100b87a0912
 
 # RECEVOIR
 # U : code rentre                                   U0100B87A09
@@ -41,8 +41,8 @@ connected = 0
 parking_actif = 0
 config_loaded = 0
 
-listcode = ['0100b87a09', '0000c2f7ee', '0001f2f00', '1111c3a56', '1010a5c89', '1100b9b96', '1110e6d23', '1001f5e12', '0001f2f35', '1100a3c01', '1111a6c25', '0000b5d21', '0001d9e55', '0100c1f65', '0110d0a36']
-listcode_f = ['0010e5b22', '1110f6f99', '0000f5b69', '0101a2c26']
+listcode = ['0100b87a09', '0000c2f7ee', '00001f2f00', '11110c3a56', '10100a5c89', '11000b9b96', '11100e6d23', '10010f5e12', '00001f2f35', '1100a03c01', '11110a6c25', '00000b5d21', '00001d9e55', '01000c1f65', '01010d0a36']
+listcode_f = ['00010e5b22', '11100f6f99', '00000f5b69', '01001a2c26']
 
 code_accept = []
 place_active = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
@@ -62,6 +62,7 @@ def clientthread(conn, addr):
         conn.send(load.encode('ascii'))
 
     while connected==1:
+        '''
         try:
             data = conn.recv(1024)
             datarecv = str(data, 'utf-8')
@@ -74,45 +75,101 @@ def clientthread(conn, addr):
             if datarecv!='0000':
                 print(str(addr[0])+':'+str(addr[1])+' -> '+datarecv)
             if datarecv[0] == 'Z': # Ajoute un code
-                code_accept.append(datarecv[1:])
+                code_accept.append(int(datarecv[1:]))
             elif datarecv[0] == 'z': # Supprimer un code
-                code_accept.remove(datarecv[1:])
+                code_accept.remove(int(datarecv[1:]))
             elif datarecv[0] == 'Y': # Activer une place du parking
                 if len(datarecv)==3:
-                    place_active[1:] = 1
+                    place_active[int(datarecv[1:])] = 1
                 else:
-                    place_active[1] = 1
+                    place_active[int(datarecv[1])] = 1
             elif datarecv[0] == 'y': # Desactiver une place du parking
                 if len(datarecv)==3:
-                    place_active[datarecv[1:]] = 0
+                    place_active[int(datarecv[1:])] = 0
                 else:
-                    place_active[datarecv[1]] = 0
+                    place_active[int(datarecv[1])] = 0
             elif datarecv[0] == 'X': # Activer le parking
                 parking_actif = 1
             elif datarecv[0] == 'x': # Desactiver le parking
                 parking_actif = 0
             elif datarecv[0] == 'W': # Associer un badge a une place 
                 if len(datarecv)==13:
-                    place_predef[datarecv[12:13]] = 1
-                    place_codes[datarecv[12:13]] = datarecv[1:11]
+                    place_predef[int(datarecv[11:12])] = 1
+                    place_codes[int(datarecv[11:12])] = datarecv[1:10]
                 else:
-                    place_predef[datarecv[12]] = 1
-                    place_codes[datarecv[12]] = datarecv[1:11]
+                    place_predef[int(datarecv[11])] = 1
+                    place_codes[int(datarecv[11])] = datarecv[1:10]
             elif datarecv[0] == 'w': # Enlever l'association d'un badge a une place
                 if len(datarecv)==13:
-                    place_predef[datarecv[12:13]] = 0
-                    place_codes[datarecv[12:13]] = ""
+                    place_predef[int(datarecv[11:12])] = 0
+                    place_codes[int(datarecv[11:12])] = ""
                 else:
-                    place_predef[datarecv[12]] = 0
-                    place_codes[datarecv[12]] = ""
+                    place_predef[int(datarecv[11])] = 0
+                    place_codes[int(datarecv[11])] = ""
+            elif datarecv[0] == 'V': # Place prise
+                if len(datarecv)==13:
+                    place_dispo[int(datarecv[11:12])] = 0
+                    place_codes[int(datarecv[11:12])] = ""
+                else:
+                    place_dispo[int(datarecv[11])] = 0
+                    place_codes[int(datarecv[11])] = ""
         except:
             print("2")
             if connected==1:
                 connected = 0
                 print(str(addr[0])+":"+str(addr[1])+" s'est deconnecté")
             break
- 
 
+        '''
+        data = conn.recv(1024)
+        datarecv = str(data, 'utf-8')
+        if not data:
+            print("1")
+            #if connected==1:
+            #    connected = 0
+            #    print(str(addr[0])+":"+str(addr[1])+" s'est deconnecté")
+            break
+        if datarecv!='0000':
+            print(str(addr[0])+':'+str(addr[1])+' -> '+datarecv)
+        if datarecv[0] == 'Z': # Ajoute un code
+            code_accept.append(int(datarecv[1:]))
+        elif datarecv[0] == 'z': # Supprimer un code
+            code_accept.remove(int(datarecv[1:]))
+        elif datarecv[0] == 'Y': # Activer une place du parking
+            if len(datarecv)==3:
+                place_active[int(datarecv[1:])] = 1
+            else:
+                place_active[int(datarecv[1])] = 1
+        elif datarecv[0] == 'y': # Desactiver une place du parking
+            if len(datarecv)==3:
+                place_active[int(datarecv[1:])] = 0
+            else:
+                place_active[int(datarecv[1])] = 0
+        elif datarecv[0] == 'X': # Activer le parking
+            parking_actif = 1
+        elif datarecv[0] == 'x': # Desactiver le parking
+            parking_actif = 0
+        elif datarecv[0] == 'W': # Associer un badge a une place 
+            if len(datarecv)==13:
+                place_predef[int(datarecv[11:12])] = 1
+                place_codes[int(datarecv[11:12])] = datarecv[1:10]
+            else:
+                place_predef[int(datarecv[11])] = 1
+                place_codes[int(datarecv[11])] = datarecv[1:10]
+        elif datarecv[0] == 'w': # Enlever l'association d'un badge a une place
+            if len(datarecv)==13:
+                place_predef[int(datarecv[11:12])] = 0
+                place_codes[int(datarecv[11:12])] = ""
+            else:
+                place_predef[int(datarecv[11])] = 0
+                place_codes[int(datarecv[11])] = ""
+        elif datarecv[0] == 'V': # Place prise
+            if len(datarecv)==13:
+                place_dispo[int(datarecv[11:12])] = 0
+                place_codes[int(datarecv[11:12])] = ""
+            else:
+                place_dispo[int(datarecv[11])] = 0
+                place_codes[int(datarecv[11])] = ""
 
 
 def checkclient(conn, addr):
@@ -139,22 +196,23 @@ def menu(conn, addr):
     while connected==1:
         print("")
         print("- Menu LARDUINO -")
-        print("(1) Voir configuration")
-        print("(2) badge accepté (sortant)")
-        print("(3) badge accepté (entrant)")
-        print("(4) badge refusé")
-        print("(5) place")
+        print("(1) Voir configuration total")
+        print("(2) Voir configuration place")
+        print("(3) badge accepté (sortant)")
+        print("(4) badge accepté (entrant)")
+        print("(5) badge refusé")
+        print("(6) place")
         q = int(input())
         if connected==1:
             a = 0
             if q == 1:
                 #code = "code 1"
                 #conn.send(code.encode('ascii'))
-                code_accept = []
-                place_active = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-                place_dispo = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-                place_predef = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-                place_codes = ['','','','','','','','','','','','','','','']
+                #code_accept = []
+                #place_active = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+                #place_dispo = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+                #place_predef = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+                #place_codes = ['','','','','','','','','','','','','','','']
                 print('CODES ACCEPTEES :')
                 print('')
                 print(code_accept)
@@ -182,6 +240,13 @@ def menu(conn, addr):
                 print('')
 
             if q == 2:
+                a = int(input())
+                print('PLACES ACTIVES : '+str(place_active[a]))
+                print('PLACES DISPO : '+str(place_dispo[a]))
+                print('PLACES PREDEFINIES : '+str(place_predef[a]))
+                print('CODES ET PLACES : '+str(place_codes[a]))
+
+            if q == 3:
                 etat = "u1"
                 #code = "U0000c2f7ee"
                 #place = "S2"
@@ -197,7 +262,7 @@ def menu(conn, addr):
                 time.sleep(0.05)
                 conn.send(etat.encode('ascii'))
 
-            if q == 3:
+            if q == 4:
                 etat = "u1"
                 #code = "U0000c2f7ee"
                 place = "S2"
@@ -213,7 +278,7 @@ def menu(conn, addr):
                 time.sleep(0.05)
                 conn.send(etat.encode('ascii'))
                 
-            if q == 4:
+            if q == 5:
                 etat = "u0"
                 #code = "U586fd542ac"
                 code = "U"+listcode_f[random.randint(0,3)]
@@ -221,7 +286,7 @@ def menu(conn, addr):
                 time.sleep(0.05)
                 conn.send(etat.encode('ascii'))
 
-            if q == 5:
+            if q == 6:
                 place = ""
                 code = ""
                 etat = ""

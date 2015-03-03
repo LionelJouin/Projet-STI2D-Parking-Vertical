@@ -110,6 +110,12 @@ def envoyer(msg):
 
 def load_config():
 	a = 0
+	while a<get_autorized_badges('size', 0):
+		time.sleep(0.05)
+		envoyer( 'Z'+get_autorized_badges('code', a) )
+		a += 1
+
+	a = 0
 	while a<15:
 		if place_dispo[a]==0:
 			time.sleep(0.05)
@@ -312,7 +318,8 @@ def add_autorized_badges(code, dateheure, place):
 def del_autorized_badges(code, id):
 	global last_seconde
 	global listcode
-	set_place_predef(get_autorized_badges('place', id), 0, '')
+	if get_autorized_badges('place', id)!="":
+		set_place_predef(get_autorized_badges('place', id), 0, '')
 	if id<get_autorized_badges('size', 0): # resolution d'un bug de suppression quand double clic sur croix de suppression
 		listcode.remove(listcode[id])
 	iud_badge(2, code)

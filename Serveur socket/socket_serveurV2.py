@@ -62,7 +62,7 @@ def clientthread(conn, addr):
         conn.send(load.encode('ascii'))
 
     while connected==1:
-        '''
+        
         try:
             data = conn.recv(1024)
             datarecv = str(data, 'utf-8')
@@ -75,9 +75,9 @@ def clientthread(conn, addr):
             if datarecv!='0000':
                 print(str(addr[0])+':'+str(addr[1])+' -> '+datarecv)
             if datarecv[0] == 'Z': # Ajoute un code
-                code_accept.append(int(datarecv[1:]))
+                code_accept.append(datarecv[1:])
             elif datarecv[0] == 'z': # Supprimer un code
-                code_accept.remove(int(datarecv[1:]))
+                code_accept.remove(datarecv[1:])
             elif datarecv[0] == 'Y': # Activer une place du parking
                 if len(datarecv)==3:
                     place_active[int(datarecv[1:])] = 1
@@ -170,7 +170,7 @@ def clientthread(conn, addr):
             else:
                 place_dispo[int(datarecv[11])] = 0
                 place_codes[int(datarecv[11])] = ""
-
+        '''
 
 def checkclient(conn, addr):
     global connected

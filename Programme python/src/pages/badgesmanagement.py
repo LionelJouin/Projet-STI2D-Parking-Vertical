@@ -89,7 +89,7 @@ def bm_init(box):
 	bm_notif(box, bm_notif_posx, bm_notif_posy)
 
 	# tableau
-	bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*0, 0, "ID", "Code d'Accès", "Place", "Date et heure d'ajout", "Supprimer")
+	bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*0, 0, "ID", "Code d'accès", "Place", "Date et heure d'ajout", "Supprimer")
 	bm_createtableau(box, bm_tableau_posx, bm_tableau_posy)
 
 	bm_createpagination(box,0 ,bm_tableau_posx, bm_tableau_posy+330, "<")
@@ -266,10 +266,6 @@ def bm_delClick(box, code, id):
 	set_checking_var("bm_notific", "Le code "+str(code)+" a été supprimé.")
 
 def bm_createpagination(box, id, x, y, text):	
-	global bm_pagination_rect
-	global bm_pagination_rectangle
-	global bm_pagination_text
-
 	bm_pagination_rectangle.append(box.create_rectangle(x, y, x+30, y+26, fill='#2ecc71', width=0))
 	bm_pagination_text.append(box.create_text(x+15, y+13, text=text, fill="#ecf0f1", font="Arial 20"))
 	bm_pagination_rect.append(box.create_rectangle(x, y, x+30, y+25, width=0))

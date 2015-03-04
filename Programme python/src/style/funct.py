@@ -432,6 +432,19 @@ def iud_badge(command, code=0, dateheure=0, place=0):
 	
 	connexion.commit()
 
+def load_logutilisation(page):
+	page = page*18
+	cursor.execute("SELECT Count(*) FROM utilisation")
+	cursor.execute("SELECT * FROM utilisation ORDER BY utilisation_id DESC LIMIT 18 OFFSET ?", [page])
+	'''
+	global listutilisation
+	listutilisation = cursor.fetchall() 
+	a = 17
+	while a>-1:
+		add_last_places(listutilisation[a][4], listutilisation[a][1], listutilisation[a][3], listutilisation[a][2], listutilisation[a][5], 1)
+		a -= 1
+	'''
+
 '''
 ------------------------------------------------------
 checking_var

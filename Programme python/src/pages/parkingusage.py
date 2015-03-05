@@ -22,10 +22,10 @@ pu_tableau_posy = 63
 
 def pu_init(box):
 
-	set_checking_var("pu_page_select", 0)
+	set_checking_var("pu_page_selectret", "0")
 	set_checking_var("pu_page_select_old", 0)
 
-	load_logutilisation(get_autorized_badges('pu_page_select', 0))
+	load_logutilisation(get_checking_var('pu_page_select'))
 
 	global pu_tableau_rectangle
 	global pu_tableau_id
@@ -100,6 +100,23 @@ def pu_createline(box, x, y, style, id, badges, etrantsortant, place, dateheure)
 	pu_tableau_badges.append(box.create_text(largeur*0.25, y+10, text=badges, fill="#333333", font="Arial 10 bold"))
 	pu_tableau_dateheure.append(box.create_text(largeur*0.5, y+10, text=dateheure, fill="#333333", font="Arial 10 bold"))
 
+def pu_createline(box, x, y, style, id, badges, etrantsortant, place, dateheure):
+	ida = id+1-15*get_checking_var('pu_page_select')
+	if style==0:
+		pass
+	elif style==1:
+		pass
+	elif style==2:
+		pass
+	if etrantsortant==0:
+		pass
+	elif etrantsortant==1:
+		pass
+	elif etrantsortant==3:
+		pass
+	else:
+		pass
+
 def pu_createtableau(box, x, y):
 	a = 0
 	while a<17:
@@ -134,15 +151,26 @@ def pu_paginationOutOver(box, id):
 
 def pu_paginationClick(box, id):
 	if id==0:
-		if pu_pageselected<=0:
+		if get_checking_var('pu_page_select')<=0 or logutilisation('nbpage', 0)==0:
 			pass
 		else:
-			set_checking_var("pu_page_select", get_autorized_badges('pu_page_select', 0)+1)
+			set_checking_var("pu_page_select", get_checking_var('pu_page_select')-1)
 	else:
-		if pu_pageselected>=logutilisation('nbpage', a):
+		if get_checking_var('pu_page_select')>=logutilisation('nbpage', 0) or logutilisation('nbpage', 0)==0:
 			pass
 		else:
-			set_checking_var("pu_page_select", get_autorized_badges('pu_page_select', 0)+1)
+			set_checking_var("pu_page_select", get_checking_var('pu_page_select')+1)
+
+def pu_updatedatatableau(box):
+	pu_page_select = get_checking_var('pu_page_select')
+	a = 17*pu_page_select 
+	b = 17*(pu_page_select+1)
+	while a<b:
+		if a<logutilisation('size', 1):
+			pass
+		else:
+			pass
+		a+=1
 
 '''
 --------------------------------------------------------------------------------------
@@ -150,7 +178,15 @@ update
 '''
 def pu_update(box, command=1):
 	if command==1:
-		pass
+		if get_checking_var("seconde") != None:
+			if get_checking_var("seconde")!=logutilisation('seconde', 0) or get_checking_var('pu_page_select')!=get_checking_var('pu_page_select_old'):
+				pu_updatedatatableau(box)
+				set_checking_var("pu_page_select_old", get_checking_var('pu_page_select'))
+				set_checking_var("seconde", logutilisation('seconde', 0))
+		else:
+			set_checking_var("seconde", logutilisation('seconde', 0))
+			set_checking_var("pu_page_select", 0)
+			set_checking_var("pu_page_select_old", 0)
 	elif command==2: # la taille de la fenetre change
 		pu_updatetableau(box)
 	else:

@@ -345,6 +345,8 @@ def logutilisation(par, id):
 		return(logsize)
 	elif par=="nbpage":
 		return(ceil(logsize)/17)
+	elif par=="seconde":
+		return(last_seconde)
 
 '''
 ------------------------------------------------------
@@ -454,7 +456,9 @@ def iud_badge(command, code=0, dateheure=0, place=0):
 	connexion.commit()
 
 def load_logutilisation(page):
-	page = page*18
+	global last_seconde
+	last_seconde = time.strftime('%H:%M:%S')
+	pages = page*18
 	cursor.execute("SELECT Count(*) FROM utilisation")
 	global logsize
 	logsiz = cursor.fetchall() 

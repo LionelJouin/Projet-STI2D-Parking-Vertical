@@ -463,7 +463,7 @@ def load_logutilisation(page):
 	global logsize
 	logsiz = cursor.fetchall() 
 	logsize = logsiz[0][0]
-	cursor.execute("SELECT * FROM utilisation ORDER BY utilisation_id DESC LIMIT 18 OFFSET ?", [page])
+	cursor.execute("SELECT * FROM utilisation ORDER BY utilisation_id DESC LIMIT 18 OFFSET ?", [pages])
 	global logutilisations
 	logutilisations = cursor.fetchall() 
 

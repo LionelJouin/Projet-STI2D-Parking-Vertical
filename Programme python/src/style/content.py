@@ -35,6 +35,9 @@ class content:
 		set_checking_var("bm_page_select_old", 0)
 		set_checking_var("bm_notific", "Aucune notification")
 
+		set_checking_var("pu_page_select", 0)
+		set_checking_var("pu_page_select_old", 0)
+
 		set_checking_var("seconde", last_places('seconde', 0))
 
 	def varchange_resize(self, event):

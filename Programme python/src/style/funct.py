@@ -145,6 +145,9 @@ last_place = [15, 1, 15, 15, 1, 3, 2, 0, 15, 0]
 last_dateheure = ['09/02/2015 - 20:24', '09/02/2015 - 20:20', '09/02/2015 - 19:13', '09/02/2015 - 15:04', '09/02/2015 - 08:24', '08/02/2015 - 23:55', '08/02/2015 - 22:25', '08/02/2015 - 18:14', '08/02/2015 - 17:26', '08/02/2015 - 16:59']
 last_seconde = '20:24:15'
 
+logsize = 0
+logutilisations = [(1, '0000000000', 0, 2, 15), (2, '0000000000', 0, 2, 15), (3, '0000000000', 0, 2, 15), (4, '0000000000', 0, 2, 15), (5, '0000000000', 0, 2, 15), (6, '0000000000', 0, 2, 15), (7, '0000000000', 0, 2, 15), (8, '0000000000', 0, 2, 15), (9, '0000000000', 0, 2, 15), (10, '0000000000', 0, 2, 15), (11, '0000000000', 0, 2, 15), (12, '0000000000', 0, 2, 15), (13, '0000000000', 0, 2, 15), (14, '0000000000', 0, 2, 15), (15, '0000000000', 0, 2, 15), (16, '0000000000', 0, 2, 15), (17, '0000000000', 0, 2, 15)]
+
 def is_place_active(id):
 	return(place_active[id])
 
@@ -325,6 +328,24 @@ def del_autorized_badges(code, id):
 	iud_badge(2, code)
 	last_seconde = time.strftime('%H:%M:%S')
 
+def logutilisation(par, id):
+	if par=='place':
+		return(logutilisations[id][4])
+	elif par=='code':
+		return(logutilisations[id][1])
+	elif par=='dateheure':
+		return(logutilisations[id][5])
+	elif par=='entrantsortant':
+		return(logutilisations[id][3])
+	elif par=='etat':
+		return(logutilisations[id][2])
+	elif par=='id':
+		return(logutilisations[id][0])
+	elif par=='size':
+		return(logsize)
+	elif par=="nbpage":
+		return(ceil(logsize)/17)
+
 '''
 ------------------------------------------------------
 base de donnees
@@ -435,15 +456,12 @@ def iud_badge(command, code=0, dateheure=0, place=0):
 def load_logutilisation(page):
 	page = page*18
 	cursor.execute("SELECT Count(*) FROM utilisation")
+	global logsize
+	logsiz = cursor.fetchall() 
+	logsize = logsiz[0][0]
 	cursor.execute("SELECT * FROM utilisation ORDER BY utilisation_id DESC LIMIT 18 OFFSET ?", [page])
-	'''
-	global listutilisation
-	listutilisation = cursor.fetchall() 
-	a = 17
-	while a>-1:
-		add_last_places(listutilisation[a][4], listutilisation[a][1], listutilisation[a][3], listutilisation[a][2], listutilisation[a][5], 1)
-		a -= 1
-	'''
+	global logutilisations
+	logutilisations = cursor.fetchall() 
 
 '''
 ------------------------------------------------------

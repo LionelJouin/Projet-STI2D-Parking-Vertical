@@ -22,7 +22,10 @@ pu_tableau_posy = 63
 
 def pu_init(box):
 
-	load_logutilisation(1)
+	set_checking_var("pu_page_select", 0)
+	set_checking_var("pu_page_select_old", 0)
+
+	load_logutilisation(get_autorized_badges('pu_page_select', 0))
 
 	global pu_tableau_rectangle
 	global pu_tableau_id
@@ -56,7 +59,7 @@ def pu_init(box):
 	pu_createlegende(box, "#9b59b6", "Voitures entrantes", 190, 5)
 	pu_createlegende(box, "#f1c40f", "Voitures sortantes", 190, 34)
 
-	pu_createline(box, pu_tableau_posx, pu_tableau_posy, 0, "ID", "Code d'accès", 2, "Place | Voiture entrante ou sortante", "04/03/2015 - 21:04")
+	pu_createline(box, pu_tableau_posx, pu_tableau_posy, 2, "ID", "Code d'accès", 3, "Place | Voiture entrante ou sortante", "Date et heure")
 	pu_createtableau(box, pu_tableau_posx, pu_tableau_posy)
 
 	pu_createpagination(box,0 ,pu_tableau_posx, pu_tableau_posy+365, "<")
@@ -74,11 +77,11 @@ def pu_createline(box, x, y, style, id, badges, etrantsortant, place, dateheure)
 		largeur = box.winfo_width()
 
 	if style==0:
-		pu_tableau_rectangle.append(box.create_rectangle(x, y, largeur-x*2, y+20, fill='#9E9E9E', width=0))
+		pu_tableau_rectangle.append(box.create_rectangle(x, y, largeur-x*2, y+20, fill='#FFCDD2', width=0))
 	elif style==1:
 		pu_tableau_rectangle.append(box.create_rectangle(x, y, largeur-x*2, y+20, fill='#C8E6C9', width=0))
 	elif style==2:
-		pu_tableau_rectangle.append(box.create_rectangle(x, y, largeur-x*2, y+20, fill='#FFCDD2', width=0))
+		pu_tableau_rectangle.append(box.create_rectangle(x, y, largeur-x*2, y+20, fill='#9E9E9E', width=0))
 
 	if etrantsortant==0:
 		pu_tableau_etat.append(box.create_rectangle(largeur-160, y,largeur-140, y+20, fill='#9b59b6', width=0))
@@ -86,7 +89,7 @@ def pu_createline(box, x, y, style, id, badges, etrantsortant, place, dateheure)
 	elif etrantsortant==1:
 		pu_tableau_etat.append(box.create_rectangle(largeur-160, y,largeur-140, y+20, fill='#f1c40f', width=0))
 		pu_tableau_place.append(box.create_text(largeur-150, y+10, text=place, fill="#333333", font="Arial 10 bold"))
-	elif etrantsortant==2:
+	elif etrantsortant==3:
 		pu_tableau_etat.append(box.create_rectangle(largeur-160, y,largeur-140, y+20, fill='#9E9E9E', width=0))
 		pu_tableau_place.append(box.create_text(largeur-150, y+10, text=place, fill="#333333", font="Arial 10 bold"))
 	else:
@@ -100,10 +103,8 @@ def pu_createline(box, x, y, style, id, badges, etrantsortant, place, dateheure)
 def pu_createtableau(box, x, y):
 	a = 0
 	while a<17:
-		if a!=5:
-			pu_createline(box, x, y+20*(a+1), 1, a, '0000000000', 0, '8', "04/03/2015 - 21:04")
-		else:
-			pu_createline(box, x, y+20*(a+1), 2, a, '0000000000', 3, '8', "04/03/2015 - 21:04")
+		pu_createline(box, x, y+20*(a+1), logutilisation('etat', a), a, logutilisation('code', a), logutilisation('entrantsortant', a), logutilisation('place', a), logutilisation('dateheure', a))
+		pu_createline(box, x, y+20*(a+1), logutilisation('etat', a), a, logutilisation('code', a), logutilisation('entrantsortant', a), logutilisation('place', a), logutilisation('dateheure', a))
 		a += 1
 
 def pu_updatetableau(box):
@@ -130,6 +131,18 @@ def pu_paginationOver(box, id):
 
 def pu_paginationOutOver(box, id):
 	box.itemconfigure(pu_pagination_rectangle[id], fill='#2ecc71')
+
+def pu_paginationClick(box, id):
+	if id==0:
+		if pu_pageselected<=0:
+			pass
+		else:
+			set_checking_var("pu_page_select", get_autorized_badges('pu_page_select', 0)+1)
+	else:
+		if pu_pageselected>=logutilisation('nbpage', a):
+			pass
+		else:
+			set_checking_var("pu_page_select", get_autorized_badges('pu_page_select', 0)+1)
 
 '''
 --------------------------------------------------------------------------------------

@@ -185,10 +185,6 @@ def pu_updatedatatableau(box):
 	a = 0
 	b = 17*pu_page_select 
 	c = 17*(pu_page_select+1)
-	print( str(get_checking_var('pu_page_select')) )
-	#print( get_checking_var('pu_page_select') )
-	#a = 0
-	#while a<17:
 	while b<c:
 		if b<logutilisation('size', 1):
 			pu_updateline(box, logutilisation('etat', a), a, logutilisation('id', a), logutilisation('code', a), logutilisation('entrantsortant', a), logutilisation('place', a), logutilisation('dateheure', a))
@@ -205,6 +201,7 @@ def pu_update(box, command=1):
 	if command==1:
 		if get_checking_var("seconde") != None:
 			if get_checking_var("seconde")!=logutilisation('seconde', 0) or get_checking_var('pu_page_select')!=get_checking_var('pu_page_select_old'):
+				load_logutilisation(get_checking_var('pu_page_select'), 1)
 				pu_updatedatatableau(box)
 				set_checking_var("pu_page_select_old", get_checking_var('pu_page_select'))
 				set_checking_var("seconde", logutilisation('seconde', 0))

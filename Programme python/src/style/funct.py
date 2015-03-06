@@ -455,17 +455,27 @@ def iud_badge(command, code=0, dateheure=0, place=0):
 	
 	connexion.commit()
 
-def load_logutilisation(page):
+def load_logutilisation(page, par=0):
 	global last_seconde
+	global logsize
+	global logutilisations
 	last_seconde = time.strftime('%H:%M:%S')
 	pages = page*17
-	cursor.execute("SELECT Count(*) FROM utilisation")
-	global logsize
-	logsiz = cursor.fetchall() 
-	logsize = logsiz[0][0]
-	cursor.execute("SELECT * FROM utilisation ORDER BY utilisation_id DESC LIMIT 18 OFFSET ?", [pages])
-	global logutilisations
-	logutilisations = cursor.fetchall() 
+	if par==0:
+		cursor.execute("SELECT Count(*) FROM utilisation")
+		logsiz = cursor.fetchall() 
+		logsize = logsiz[0][0]
+		cursor.execute("SELECT * FROM utilisation ORDER BY utilisation_id DESC LIMIT 18 OFFSET ?", [pages])
+		logutilisations = cursor.fetchall() 
+	else:	
+		connexion_thread = sqlite3.connect('data/donnees/database.db', check_same_thread = False, isolation_level = None)
+		cursor_thread = connexion_thread.cursor()
+		cursor_thread.execute("SELECT Count(*) FROM utilisation")
+		logsiz = cursor_thread.fetchall() 
+		logsize = logsiz[0][0]
+		cursor_thread.execute("SELECT * FROM utilisation ORDER BY utilisation_id DESC LIMIT 18 OFFSET ?", [pages])
+		logutilisations = cursor_thread.fetchall() 
+		connexion_thread.close()
 	'''
 	cursor.execute("SELECT * FROM utilisation")
 	hg = cursor.fetchall() 

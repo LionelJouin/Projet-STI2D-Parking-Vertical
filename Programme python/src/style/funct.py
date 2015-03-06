@@ -106,25 +106,22 @@ def getting_socket():
 
 def envoyer(msg):
 	if is_connectedtosystem()==1:
+		time.sleep(0.05)
 		sock.send(msg.encode('ascii'))
 
 def load_config():
 	a = 0
 	while a<get_autorized_badges('size', 0):
-		time.sleep(0.05)
 		envoyer( 'Z'+get_autorized_badges('code', a) )
 		a += 1
 
 	a = 0
 	while a<15:
 		if place_dispo[a]==0:
-			time.sleep(0.05)
 			envoyer('V'+str(place_codes[a])+str(a))
 		if place_predef[a]==1:
-			time.sleep(0.05)
 			envoyer( 'W'+str(place_codes[a])+str(a) )
 		if place_active[a]==0:
-			time.sleep(0.05)
 			envoyer( 'y'+str(a) )
 		a += 1
 
@@ -273,11 +270,11 @@ def get_autorized_badges(par, id):
 
 def add_autorized_badges(code, dateheure, place):
 	global last_seconde
-	global listcode
 	c = 0
 	d = 0
-	if place!="":
-		if is_place_dispo(place)==1:
+
+	if place!="": # si on lie un badge a une place
+		if is_place_dispo(place)==1: # si la place est dispo
 			while c<get_autorized_badges('size', 0):
 				if place==get_autorized_badges('place', c):
 					set_checking_var("bm_notific", "La place N°"+str(place)+" est déjà occupé par le code "+get_autorized_badges('code', c)+".")
@@ -287,42 +284,53 @@ def add_autorized_badges(code, dateheure, place):
 		else:
 			set_checking_var("bm_notific", "La place N°"+str(place)+" doit être libre pour pour effectuer cette action.")
 			d = 1
+
 	if d==0:
 		a = 0
 		b = 0
-		while a<get_autorized_badges('size', 0):
-			if code==get_autorized_badges('code', a):
+		while a<get_autorized_badges('size', 0): # --------------------------- UPDATE ---------------------------
+			if code==get_autorized_badges('code', a): # si le code existe deja
+
 				listcode[a] = (len(listcode)-1, code, dateheure, place)
 				iud_badge(1, code, dateheure, place)
 				b = 1
 				a = len(listcode)
-				if place=="":
-					if code in place_codes:
+
+				if place=="": # place non reservé
+					if code in place_codes: # enleve le lien du badge avec une place
+						envoyer('w'+str(code)+str(place_codes.index(code)))
+						set_checking_var("bm_notific", "Le code "+str(code)+" n'est plus lié a la place N°"+str(place_codes.index(code))+".")
 						set_place_predef(place_codes.index(code), 0, code)
-					#set_place_predef(place, 0, code)
-					set_checking_var("bm_notific", "Le code "+str(code)+" a été mis à jour.")
-				else:
-					set_place_predef(place, 1, code)
+					else: # on ne fait rien
+						set_checking_var("bm_notific", "Le code "+str(code)+" a été mis à jour.")
+				else: # place reservé
+					if code in place_codes: # enleve le lien du badge avec une place
+						envoyer('w'+str(code)+str(place_codes.index(code)))
+						set_place_predef(place_codes.index(code), 0, code)
+					envoyer('W'+str(code)+str(place))
 					set_checking_var("bm_notific", "Le code "+str(code)+" a été mis à jour et lié à la place N°"+str(place)+".")
+					set_place_predef(place, 1, code)
 			a += 1
-		if b == 0:
+		if b == 0: # --------------------------- INSERT ---------------------------
 			listcode.append((len(listcode), code, dateheure, place))
 			iud_badge(0, code, dateheure, place)
 			if place=="":
-				if code in place_codes:
-					set_place_predef(place_codes.index(code), 0, code)
-				#set_place_predef(place, 0, code)
+				envoyer('Z'+str(code))
 				set_checking_var("bm_notific", "Le code "+str(code)+" a été ajouté.")
 			else:
+				envoyer('W'+str(code)+str(place))
 				set_place_predef(place, 1, code)
 				set_checking_var("bm_notific", "Le code "+str(code)+" a été ajouté et lié à la place N°"+str(place)+".")
+
 	last_seconde = time.strftime('%H:%M:%S')
 
 def del_autorized_badges(code, id):
 	global last_seconde
 	global listcode
-	if get_autorized_badges('place', id)!="":
+	if get_autorized_badges('place', id)!="": # si place predef
+		envoyer('w'+str(code)+str(get_autorized_badges('place', id)))
 		set_place_predef(get_autorized_badges('place', id), 0, '')
+	envoyer('z'+code)
 	if id<get_autorized_badges('size', 0): # resolution d'un bug de suppression quand double clic sur croix de suppression
 		listcode.remove(listcode[id])
 	iud_badge(2, code)

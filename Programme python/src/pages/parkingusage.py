@@ -23,7 +23,9 @@ pu_tableau_posy = 63
 def pu_init(box):
 
 	set_checking_var("pu_page_select", 0)
+	#set_checking_var("pu_page_select", 11)
 	set_checking_var("pu_page_select_old", 0)
+	#set_checking_var("pu_page_select_old", 11)
 
 	load_logutilisation(get_checking_var('pu_page_select'))
 
@@ -127,10 +129,17 @@ def pu_updateline(box, style, id, idshow, badges, etrantsortant, place, dateheur
 	box.itemconfigure(pu_tableau_dateheure[ida], text=dateheure, fill="#333333")
 
 def pu_createtableau(box, x, y):
+	pu_page_select = get_checking_var('pu_page_select')
 	a = 0
-	while a<17:
-		pu_createline(box, x, y+20*(a+1), logutilisation('etat', a), a, logutilisation('id', a), logutilisation('code', a), logutilisation('entrantsortant', a), logutilisation('place', a), logutilisation('dateheure', a))
+	b = 17*pu_page_select 
+	c = 17*(pu_page_select+1)
+	while b<c:
+		if b<logutilisation('size', 1):
+			pu_createline(box, x, y+20*(a+1), logutilisation('etat', a), a, logutilisation('id', a), logutilisation('code', a), logutilisation('entrantsortant', a), logutilisation('place', a), logutilisation('dateheure', a))
+		else:
+			pu_createline(box, x, y+20*(a+1), 2, a, "", "", 3, "", "")
 		a += 1
+		b += 1
 
 def pu_updatetableau(box):
 	if box.winfo_width()>640:
@@ -165,7 +174,7 @@ def pu_paginationClick(box, id):
 			set_checking_var("pu_page_select", get_checking_var('pu_page_select')-1)
 			load_logutilisation(get_checking_var('pu_page_select'))
 	else:
-		if get_checking_var('pu_page_select')>=logutilisation('nbpage', 0) or logutilisation('nbpage', 0)==0:
+		if get_checking_var('pu_page_select')>=logutilisation('nbpage', 0)-1 or logutilisation('nbpage', 0)==0:
 			pass
 		else:
 			set_checking_var("pu_page_select", get_checking_var('pu_page_select')+1)
@@ -176,15 +185,15 @@ def pu_updatedatatableau(box):
 	a = 0
 	b = 17*pu_page_select 
 	c = 17*(pu_page_select+1)
+	print( str(get_checking_var('pu_page_select')) )
 	#print( get_checking_var('pu_page_select') )
 	#a = 0
 	#while a<17:
 	while b<c:
-		print( str(b)+" | "+str(logutilisation('size', 1)) )
 		if b<logutilisation('size', 1):
 			pu_updateline(box, logutilisation('etat', a), a, logutilisation('id', a), logutilisation('code', a), logutilisation('entrantsortant', a), logutilisation('place', a), logutilisation('dateheure', a))
 		else:
-			pu_updateline(box, 1, a, "", "", "", "", "")
+			pu_updateline(box, 2, a, "", "", 3, "", "")
 		b += 1
 		a += 1
 

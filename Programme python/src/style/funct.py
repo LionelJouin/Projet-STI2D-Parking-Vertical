@@ -458,7 +458,7 @@ def iud_badge(command, code=0, dateheure=0, place=0):
 def load_logutilisation(page):
 	global last_seconde
 	last_seconde = time.strftime('%H:%M:%S')
-	pages = page*18
+	pages = page*17
 	cursor.execute("SELECT Count(*) FROM utilisation")
 	global logsize
 	logsiz = cursor.fetchall() 
@@ -466,6 +466,13 @@ def load_logutilisation(page):
 	cursor.execute("SELECT * FROM utilisation ORDER BY utilisation_id DESC LIMIT 18 OFFSET ?", [pages])
 	global logutilisations
 	logutilisations = cursor.fetchall() 
+	'''
+	cursor.execute("SELECT * FROM utilisation")
+	hg = cursor.fetchall() 
+	a = 0
+	while a<logsize:
+		print(hg[a])
+		a += 1'''
 
 '''
 ------------------------------------------------------

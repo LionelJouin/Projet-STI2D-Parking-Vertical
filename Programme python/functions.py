@@ -23,6 +23,8 @@ class main:
 		window.title('STI2D - Parking vertical')
 		# couleur de fond
 		window['bg'] = '#ecf0f1'
+		# icone de la fenetre
+		window.iconbitmap("data/img/logo.ico")
 		# definie la taille et les bords de la fenetre
 		define_sizescreen( ( window.winfo_screenwidth() , window.winfo_screenheight() ) )
 		define_sizenpos( ( pxltopercent(infos("largeur_fenetre_percent"),infos("largeur_ecran")) , pxltopercent(infos("hauteur_fenetre_percent"),infos("hauteur_ecran")) ) , (0,0) )

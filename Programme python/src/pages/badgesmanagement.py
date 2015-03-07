@@ -92,8 +92,8 @@ def bm_init(box):
 	bm_createline(box, bm_tableau_posx, bm_tableau_posy+20*0, 0, "ID", "Code d'accès", "Place", "Date et heure d'ajout", "Supprimer")
 	bm_createtableau(box, bm_tableau_posx, bm_tableau_posy)
 
-	bm_createpagination(box,0 ,bm_tableau_posx, bm_tableau_posy+330, "<")
-	bm_createpagination(box,1 ,bm_tableau_posx+35, bm_tableau_posy+330, ">")
+	bm_createpagination(box,0 ,bm_tableau_posx, bm_tableau_posy+325, "<")
+	bm_createpagination(box,1 ,bm_tableau_posx+35, bm_tableau_posy+325, ">")
 
 '''
 --------------------------------------------------------------------------------------

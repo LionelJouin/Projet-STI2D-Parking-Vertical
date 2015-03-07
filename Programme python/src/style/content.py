@@ -11,6 +11,7 @@ from src.pages.parkingusage import *
 from src.pages.save import *
 from src.pages.restoration import *
 from src.pages.settings import *
+from src.pages.console import *
 
 from src.pages.development import *
 from src.pages.system import *
@@ -95,6 +96,11 @@ class content:
 					set_init(self.content)
 				else:
 					set_update(self.content, update)
+			elif get_selected_submenu() == 3: # Console
+				if update==0:
+					co_init(self.content)
+				else:
+					co_update(self.content, update)
 			else: 
 				pass
 		elif get_selected_menu() == 2:
@@ -137,6 +143,8 @@ class content:
 				res_delete(self.content)
 			elif self.submenu == 2: # Paramètres
 				set_delete(self.content)
+			elif self.submenu == 3: # Console
+				co_delete(self.content)
 			else: 
 				pass
 		elif self.menu == 2:

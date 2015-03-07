@@ -84,6 +84,7 @@ class submenu:
 			self.create_submenu('Sauvegarde', 0)
 			self.create_submenu('Restauration du système', 1)
 			self.create_submenu('Paramètres', 2)
+			self.create_submenu('Console', 3)
 		elif id == 2:
 			self.create_submenu('Développement', 0)
 			self.create_submenu('Système', 1)

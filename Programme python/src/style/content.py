@@ -28,6 +28,19 @@ class content:
 		self.submenu = get_selected_submenu()
 		self.content.bind('<Configure>', self.varchange_resize)
 		
+		set_checking_var("pm", 0)
+		set_checking_var("pc", 0)
+		set_checking_var("bm", 0)
+		set_checking_var("pu", 0)
+
+		set_checking_var("sav", 0)
+		set_checking_var("res", 0)
+		set_checking_var("set", 0)
+		set_checking_var("co", 0)
+
+		set_checking_var("dev", 0)
+		set_checking_var("sys", 0)
+
 		set_checking_var("pm_p_active", places_active().count(0))
 		set_checking_var("pm_p_dispo", places_dispo().count(0))
 		
@@ -40,6 +53,7 @@ class content:
 		set_checking_var("pu_page_select_old", 0)
 
 		set_checking_var("seconde", last_places('seconde', 0))
+
 
 	def varchange_resize(self, event):
 		self.make_content(2)
@@ -61,59 +75,79 @@ class content:
 			if get_selected_submenu() == 0:   # Surveillance du parking
 				if update==0:
 					pm_init(self.content)
+					set_checking_var("pm", 1)
 				else: 
-					pm_update(self.content, update)
+					if get_checking_var('pm')==1:
+						pm_update(self.content, update)
 			elif get_selected_submenu() == 1: # Contrôle du parking
 				if update==0:
 					pc_init(self.content)
+					set_checking_var("pc", 1)
 				else:
-					pc_update(self.content, update)
+					if get_checking_var('pc')==1:
+						pc_update(self.content, update)
 			elif get_selected_submenu() == 2: # Gestion des badges
 				if update==0:
 					bm_init(self.content)
+					set_checking_var("bm", 1)
 				else:
-					bm_update(self.content, update)
+					if get_checking_var('bm')==1:
+						bm_update(self.content, update)
 			elif get_selected_submenu() == 3: # Utilisation du parking
 				if update==0:
 					pu_init(self.content)
+					set_checking_var("pu", 1)
 				else:
-					pu_update(self.content, update)
+					if get_checking_var('pu')==1:
+						pu_update(self.content, update)
 			else: 
 				pass
 		elif get_selected_menu() == 1:
 			if get_selected_submenu() == 0:   # Sauvegarde
 				if update==0:
 					sav_init(self.content)
+					set_checking_var("sav", 1)
 				else:
-					sav_update(self.content, update)
+					if get_checking_var('sav')==1:
+						sav_update(self.content, update)
 			elif get_selected_submenu() == 1: # Restauration du système
 				if update==0:
 					res_init(self.content)
+					set_checking_var("res", 1)
 				else:
-					res_update(self.content, update)
+					if get_checking_var('res')==1:
+						res_update(self.content, update)
 			elif get_selected_submenu() == 2: # Paramètres
 				if update==0:
 					set_init(self.content)
+					set_checking_var("set", 1)
 				else:
-					set_update(self.content, update)
+					if get_checking_var('set')==1:
+						set_update(self.content, update)
 			elif get_selected_submenu() == 3: # Console
 				if update==0:
 					co_init(self.content)
+					set_checking_var("co", 1)
 				else:
-					co_update(self.content, update)
+					if get_checking_var('co')==1:
+						co_update(self.content, update)
 			else: 
 				pass
 		elif get_selected_menu() == 2:
 			if get_selected_submenu() == 0:   # Développement
 				if update==0:
 					dev_init(self.content)
+					set_checking_var("dev", 1)
 				else:
-					dev_update(self.content, update)
+					if get_checking_var('dev')==1:
+						dev_update(self.content, update)
 			elif get_selected_submenu() == 1: # Système
 				if update==0:
 					sys_init(self.content)
+					set_checking_var("sys", 1)
 				else:
-					sys_update(self.content, update)
+					if get_checking_var('sys')==1:
+						sys_update(self.content, update)
 			else: 
 				pass
 		else:
@@ -128,30 +162,40 @@ class content:
 		if self.menu == 0:
 			if self.submenu == 0:   # Surveillance du parking
 				pm_delete(self.content)
+				set_checking_var("pm", 0)
 			elif self.submenu == 1: # Contrôle du parking
 				pc_delete(self.content)
+				set_checking_var("pc", 0)
 			elif self.submenu == 2: # Gestion des badges
 				bm_delete(self.content)
+				set_checking_var("bm", 0)
 			elif self.submenu == 3: # Utilisation du parking
 				pu_delete(self.content)
+				set_checking_var("pu", 0)
 			else: 
 				pass
 		elif self.menu == 1:
 			if self.submenu == 0:   # Sauvegarde
 				sav_delete(self.content)
+				set_checking_var("sav", 0)
 			elif self.submenu == 1: # Restauration du système
 				res_delete(self.content)
+				set_checking_var("res", 0)
 			elif self.submenu == 2: # Paramètres
 				set_delete(self.content)
+				set_checking_var("set", 0)
 			elif self.submenu == 3: # Console
 				co_delete(self.content)
+				set_checking_var("co", 0)
 			else: 
 				pass
 		elif self.menu == 2:
 			if self.submenu == 0:   # Développement
 				dev_delete(self.content)
+				set_checking_var("dev", 0)
 			elif self.submenu == 1: # Système
 				sys_delete(self.content)
+				set_checking_var("sys", 0)
 			else: 
 				pass
 		else:

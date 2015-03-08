@@ -27,6 +27,7 @@ s.listen(5) # nombre maximum de client
 # W : Associer un badge a une place                 W0100b87a0912
 # w : Enlever l'association d'un badge a une place  w0100b87a0912
 # V : Place prise                                   V0100b87a0912
+# v : decharger la place                            v12
 
 # RECEVOIR
 # U : code rentre                                   U0100B87A09

@@ -15,6 +15,9 @@ pc_dechargement_rect = []
 
 def pc_init(box):
 
+	set_checking_var("pm_p_dispo", places_dispo().count(0))
+	set_checking_var("seconde", last_places('seconde', 0))
+
 	global pc_button_rectangle
 	global pc_button_text
 	global pc_button_rect
@@ -68,9 +71,44 @@ def pc_createblocdecharg(box, x, y, id):
 	else:
 		pc_dechargement_rectangle.append(box.create_rectangle(x, y, x+200, y+40, fill='#e74c3c', width=0))
 	pc_dechargement_text.append(box.create_text(x+5, y+5, text="Décharger", fill="#ecf0f1", font="Arial 13 bold", anchor="nw"))
-	pc_dechargement_code.append(box.create_text(x+5, y+23, text="0100b87a09", fill="#ecf0f1", font="Arial 9", anchor="nw"))
+	pc_dechargement_code.append(box.create_text(x+5, y+23, text=place_code(id), fill="#ecf0f1", font="Arial 9", anchor="nw"))
 	pc_dechargement_place.append(box.create_text(x+175, y+20, text=id, fill="#ecf0f1", font="Arial 25 bold"))
 	pc_dechargement_line.append(box.create_line(x+150, y, x+150, y+40, fill="white", width=1))
+	pc_dechargement_rect.append(box.create_rectangle(x, y, x+200, y+40, width=0))
+
+	box.tag_bind(pc_dechargement_rect[id], '<Enter>', lambda event, box=box, id=id: pc_blocOver(box, id)) 
+	box.tag_bind(pc_dechargement_rect[id], '<Leave>', lambda event, box=box, id=id: pc_blocOutOver(box, id)) 
+	box.tag_bind(pc_dechargement_rect[id], '<ButtonRelease-1>', lambda event, box=box, id=id: pc_blocClick(box, id)) 
+
+def pc_blocOver(box, id):
+	if is_place_dispo(id)==1:
+		box.itemconfigure(pc_dechargement_rectangle[id], fill='#757575')
+	else:
+		box.itemconfigure(pc_dechargement_rectangle[id], fill='#c0392b')
+
+def pc_blocOutOver(box, id):
+	if is_place_dispo(id)==1:
+		box.itemconfigure(pc_dechargement_rectangle[id], fill='#9E9E9E')
+	else:
+		box.itemconfigure(pc_dechargement_rectangle[id], fill='#e74c3c')
+
+def pc_blocClick(box, id):
+	if is_place_dispo(id)==1:
+		pass
+	else:
+		if is_connectedtosystem()==1:
+			envoyer("v"+str(id))
+			if is_place_predef(id)==1:
+				set_place_dispo(id, 1, place_code(id))
+			else:
+				set_place_dispo(id, 1, "")
+
+def pc_updateblocdecharg(box, id):
+	if is_place_dispo(id)==1:
+		box.itemconfigure(pc_dechargement_rectangle[id], fill='#9E9E9E')
+	else:
+		box.itemconfigure(pc_dechargement_rectangle[id], fill='#e74c3c')
+	box.itemconfigure(pc_dechargement_code[id], text=place_code(id))
 
 def pc_createlistdecharg(box, x, y):
 	a = 0
@@ -81,13 +119,35 @@ def pc_createlistdecharg(box, x, y):
 			pc_createblocdecharg(box, x, y+(40+5)*a, a)
 		a += 1
 
+def pc_updatelistdecharg(box):
+	a = 0
+	while a<15:
+		if a>7:
+			pc_updateblocdecharg(box, a)
+		else:
+			pc_updateblocdecharg(box, a)
+		a += 1
+
+
+
 '''
 --------------------------------------------------------------------------------------
 update
 '''
 def pc_update(box, command=1):
 	if command==1:
-		pass
+		if (get_checking_var("pm_p_active") or get_checking_var("pm_p_dispo") or get_checking_var("seconde")) != None:
+			if get_checking_var('pm_p_dispo')!=places_dispo().count(0): # update des places dispo
+				set_checking_var('pm_p_dispo', places_dispo().count(0))
+				time.sleep(0.1)
+				pc_updatelistdecharg(box)
+			if get_checking_var('seconde')!=last_places('seconde', 0): # update de la listbox
+				set_checking_var("seconde", last_places('seconde', 0))
+				time.sleep(0.1)
+				pc_updatelistdecharg(box)
+		else:
+			set_checking_var("pm_p_dispo", places_dispo().count(0))
+			set_checking_var("seconde", last_places('seconde', 0))
 	else:
 		pass
 '''

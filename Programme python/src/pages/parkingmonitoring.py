@@ -1,4 +1,5 @@
 import os
+import time
 
 from tkinter import * 
 from src.style.funct import *
@@ -263,13 +264,16 @@ def pm_update(box, command=1):
 		if (get_checking_var("pm_p_active") or get_checking_var("pm_p_dispo") or get_checking_var("seconde")) != None:
 			if get_checking_var('pm_p_active')!=places_active().count(0): # update des places actives
 				set_checking_var('pm_p_active', places_active().count(0))
+				time.sleep(0.1)
 				pm_updatelegende(box)
 			if get_checking_var('pm_p_dispo')!=places_dispo().count(0): # update des places dispo
 				set_checking_var('pm_p_dispo', places_dispo().count(0))
+				time.sleep(0.1)
 				pm_updatelegende(box)
 				pm_updateparking(box)
 			if get_checking_var('seconde')!=last_places('seconde', 0): # update de la listbox
 				set_checking_var("seconde", last_places('seconde', 0))
+				time.sleep(0.1)
 				pm_updatelistbox(box)
 		else:
 			set_checking_var("pm_p_active", places_active().count(0))

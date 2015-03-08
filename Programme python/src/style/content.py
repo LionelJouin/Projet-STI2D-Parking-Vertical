@@ -28,7 +28,7 @@ class content:
 		self.submenu = get_selected_submenu()
 		self.content.bind('<Configure>', self.varchange_resize)
 		
-		set_checking_var("pm", 0)
+		set_checking_var("pm", 1)
 		set_checking_var("pc", 0)
 		set_checking_var("bm", 0)
 		set_checking_var("pu", 0)

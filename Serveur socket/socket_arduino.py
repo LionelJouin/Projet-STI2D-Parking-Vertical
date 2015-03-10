@@ -3,8 +3,8 @@ import threading
  
 print("~ Client Python ~")
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#s.connect(("172.18.48.100", 1337))
-s.connect(("192.168.1.200", 1337))
+#s.connect(("172.18.41.100", 1337))
+s.connect(("172.18.41.100", 1337))
 
 # ENVOYER
 # Z : Envoyer un nouveau code                       Z0100b87a09

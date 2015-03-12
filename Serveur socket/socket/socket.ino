@@ -50,6 +50,7 @@ void loop() {
           }
           }*/
           
+        char command = client.read();
         if (command=='Z') {
           Serial.write("Ajoute un code");
         } else if (command=='z') {

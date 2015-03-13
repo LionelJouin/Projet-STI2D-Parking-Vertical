@@ -7,6 +7,10 @@
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x9E, 0x24 };
 byte ip[] = { 172,18,41,50 };
 
+char *TempPlace = "";
+char *TempCode = "";
+int aa = 0;
+
 // Initialize the Ethernet server library
 // with the IP address and port you want to use
 // (port 80 is default for HTTP):
@@ -51,26 +55,60 @@ void loop() {
           }*/
           
         char command = client.read();
-        if (command=='Z') {
-          Serial.write("Ajoute un code");
-        } else if (command=='z') {
-          Serial.write("Supprime un code");
-         } else if (command=='Y') {
-          Serial.write("Active une place");
-        } else if (command=='y') {
-          Serial.write("desactive une place");
-        } else if (command=='X') {
-          Serial.write("Active le parking");
-        } else if (command=='x') {
-          Serial.write("desactive le parking");
-        } else if (command=='W') {
-          Serial.write("Associe un badge a une place");
-        } else if (command=='w') {
-          Serial.write("Enlever l'association d'un badge a une place");
-        } else if (command=='V') {
+        //Serial.write(command);
+        if (command=='Z') { // Z0100b87a09
+          TempCode = "";
+          aa = 0;
+          Serial.print("Ajoute un code");
+        } else if (command=='z') { // z0100b87a09
+          TempCode = "";
+          aa = 0;
+          Serial.print("Supprime un code");
+        } else if (command=='Y') { // Y12
+          TempPlace = "";
+          char TempVar;
+          aa = 0;
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.print("Active la place : ");
+          Serial.print(atoi(TempPlace));
+        } else if (command=='y') { // y12
+          TempPlace = "";
+          char TempVar;
+          aa = 0;
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.print("desactive la place : ");
+          Serial.print(atoi(TempPlace));
+        } else if (command=='X') { // X
+          Serial.print("Active le parking");
+        } else if (command=='x') { // x
+          Serial.print("desactive le parking");
+        } else if (command=='W') { // W0100b87a0912
+          TempPlace = "";
+          TempCode = "";
+          aa = 0;
+          Serial.print("Associe un badge a une place");
+        } else if (command=='w') { // w0100b87a0912
+          TempPlace = "";
+          TempCode = "";
+          aa = 0;
+          Serial.print("Enlever l'association d'un badge a une place");
+        } else if (command=='V') { // V0100b87a0912
+          TempPlace = "";
+          TempCode = "";
+          aa = 0;
           Serial.write("place prise");
-        } else if (command=='v') {
-          Serial.write("decharger la place");
+        } else if (command=='v') { // v12
+          TempPlace = "";
+          aa = 0;
+          Serial.print("decharger la place");
         }
         Serial.print( "\n" );
       }

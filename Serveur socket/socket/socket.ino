@@ -107,8 +107,15 @@ void loop() {
           Serial.write("place prise");
         } else if (command=='v') { // v12
           TempPlace = "";
+          char TempVar;
           aa = 0;
-          Serial.print("decharger la place");
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.print("decharger la place : ");
+          Serial.print(atoi(TempPlace));
         }
         Serial.print( "\n" );
       }

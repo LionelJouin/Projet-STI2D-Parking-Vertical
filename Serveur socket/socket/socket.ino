@@ -59,11 +59,21 @@ void loop() {
         if (command=='Z') { // Z0100b87a09
           TempCode = "";
           aa = 0;
-          Serial.print("Ajoute un code");
+          while (a<10) {
+            TempCode[a] = client.read();
+            aa++;
+          }
+          Serial.print("Ajoute un code : ");
+          Serial.print(TempCode);
         } else if (command=='z') { // z0100b87a09
           TempCode = "";
           aa = 0;
+          while (a<10) {
+            TempCode[a] = client.read();
+            aa++;
+          }
           Serial.print("Supprime un code");
+          Serial.print(TempCode);
         } else if (command=='Y') { // Y12
           TempPlace = "";
           char TempVar;
@@ -91,20 +101,62 @@ void loop() {
         } else if (command=='x') { // x
           Serial.print("desactive le parking");
         } else if (command=='W') { // W0100b87a0912
-          TempPlace = "";
           TempCode = "";
           aa = 0;
-          Serial.print("Associe un badge a une place");
+          while (a<10) {
+            TempCode[a] = client.read();
+            aa++;
+          }
+          TempPlace = "";
+          char TempVar;
+          aa = 0;
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.print("Associe le badge : ");
+          Serial.print(TempCode);
+          Serial.print(" à la place : ");
+          Serial.print(atoi(TempPlace));
         } else if (command=='w') { // w0100b87a0912
-          TempPlace = "";
           TempCode = "";
           aa = 0;
-          Serial.print("Enlever l'association d'un badge a une place");
+          while (a<10) {
+            TempCode[a] = client.read();
+            aa++;
+          }
+          TempPlace = "";
+          char TempVar;
+          aa = 0;
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.print("Enlever l'association du badge : ");
+          Serial.print(TempCode);
+          Serial.print(" à la place : ");
+          Serial.print(atoi(TempPlace));
         } else if (command=='V') { // V0100b87a0912
-          TempPlace = "";
           TempCode = "";
           aa = 0;
-          Serial.write("place prise");
+          while (a<10) {
+            TempCode[a] = client.read();
+            aa++;
+          }
+          TempPlace = "";
+          char TempVar;
+          aa = 0;
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.write("la place : ");
+          Serial.print(TempCode);
+          Serial.write("est prise par le badge : ");
+          Serial.print(atoi(TempPlace));
         } else if (command=='v') { // v12
           TempPlace = "";
           char TempVar;

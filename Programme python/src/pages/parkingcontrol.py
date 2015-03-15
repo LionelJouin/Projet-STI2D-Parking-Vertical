@@ -52,6 +52,7 @@ def pc_createbutton(box, x, y, id, text, style):
 
 	box.tag_bind(pc_button_rect[id], '<Enter>', lambda event, box=box, id=id, style=style: pc_buttonOver(box, id, style)) 
 	box.tag_bind(pc_button_rect[id], '<Leave>', lambda event, box=box, id=id, style=style: pc_buttonOutOver(box, id, style)) 
+	box.tag_bind(pc_button_rect[id], '<ButtonRelease-1>', lambda event, box=box, id=id: pc_buttonClick(box, id)) 
 
 def pc_buttonOver(box, id, style):
 	if style==0:
@@ -64,6 +65,12 @@ def pc_buttonOutOver(box, id, style):
 		box.itemconfigure(pc_button_rectangle[id], fill='#212121')
 	elif style==1:
 		box.itemconfigure(pc_button_rectangle[id], fill='#FF5722')
+
+def pc_buttonClick(box, id):
+	if id==0:
+		envoyer('r')
+	elif id==1:
+		pass
 
 def pc_createblocdecharg(box, x, y, id):
 	if is_place_dispo(id)==1:

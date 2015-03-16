@@ -59,8 +59,8 @@ void loop() {
         if (command=='Z') { // Z0100b87a09
           TempCode = "";
           aa = 0;
-          while (a<10) {
-            TempCode[a] = client.read();
+          while (aa<10) {
+            TempCode[aa] = client.read();
             aa++;
           }
           Serial.print("Ajoute un code : ");
@@ -68,8 +68,8 @@ void loop() {
         } else if (command=='z') { // z0100b87a09
           TempCode = "";
           aa = 0;
-          while (a<10) {
-            TempCode[a] = client.read();
+          while (aa<10) {
+            TempCode[aa] = client.read();
             aa++;
           }
           Serial.print("Supprime un code");
@@ -103,8 +103,8 @@ void loop() {
         } else if (command=='W') { // W0100b87a0912
           TempCode = "";
           aa = 0;
-          while (a<10) {
-            TempCode[a] = client.read();
+          while (aa<10) {
+            TempCode[aa] = client.read();
             aa++;
           }
           TempPlace = "";
@@ -122,8 +122,8 @@ void loop() {
         } else if (command=='w') { // w0100b87a0912
           TempCode = "";
           aa = 0;
-          while (a<10) {
-            TempCode[a] = client.read();
+          while (aa<10) {
+            TempCode[aa] = client.read();
             aa++;
           }
           TempPlace = "";
@@ -141,8 +141,8 @@ void loop() {
         } else if (command=='V') { // V0100b87a0912
           TempCode = "";
           aa = 0;
-          while (a<10) {
-            TempCode[a] = client.read();
+          while (aa<10) {
+            TempCode[aa] = client.read();
             aa++;
           }
           TempPlace = "";

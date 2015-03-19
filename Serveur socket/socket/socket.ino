@@ -53,7 +53,7 @@ void loop() {
             aa++;
           }
           Serial.print("Ajoute un code : ");
-          Serial.print(str(TempCode));
+          Serial.print(String(TempCode));
           Serial.print( "\n" );
         } else if (command=='z') { // z0100b87a09
           free(TempCode);
@@ -64,7 +64,7 @@ void loop() {
             aa++;
           }
           Serial.print("Supprime un code : ");
-          Serial.print(str(TempCode));
+          Serial.print(String(TempCode));
           Serial.print( "\n" );
         } else if (command=='Y') { // Y12
           free(TempPlace);
@@ -77,7 +77,7 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("Active la place : ");
-          Serial.println(str(atoi(TempPlace)));
+          Serial.println(String(atoi(TempPlace)));
         } else if (command=='y') { // y12
           free(TempPlace);
           char *TempPlace = "";
@@ -89,7 +89,7 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("desactive la place : ");
-          Serial.println(str(atoi(TempPlace)));
+          Serial.println(String(atoi(TempPlace)));
         } else if (command=='X') { // X
           Serial.println("Active le parking");
         } else if (command=='x') { // x
@@ -112,9 +112,9 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("Associe le badge : ");
-          Serial.println(str(TempCode));
+          Serial.println(String(TempCode));
           Serial.println(" à la place : ");
-          Serial.println(str(atoi(TempPlace)));
+          Serial.println(String(atoi(TempPlace)));
         } else if (command=='w') { // w0100b87a0912
           free(TempCode);
           char *TempCode = "";
@@ -133,9 +133,9 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("Enlever l'association du badge : ");
-          Serial.println(str(TempCode));
+          Serial.println(String(TempCode));
           Serial.println(" à la place : ");
-          Serial.println(str(atoi(TempPlace)));
+          Serial.println(String(atoi(TempPlace)));
         } else if (command=='V') { // V0100b87a0912
           free(TempCode);
           char *TempCode = "";
@@ -154,9 +154,9 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("la place : ");
-          Serial.println(str(TempCode));
+          Serial.println(String(TempCode));
           Serial.println("est prise par le badge : ");
-          Serial.println(str(atoi(TempPlace)));
+          Serial.println(String(atoi(TempPlace)));
         } else if (command=='v') { // v12
           free(TempPlace);
           char *TempPlace = "";
@@ -168,7 +168,7 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("decharger la place : ");
-          Serial.println(str(atoi(TempPlace)));
+          Serial.println(String(atoi(TempPlace)));
         }
         Serial.println( "\n" );
       }

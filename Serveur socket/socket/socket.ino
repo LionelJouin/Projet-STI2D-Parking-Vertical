@@ -169,6 +169,8 @@ void loop() {
           }
           Serial.println("decharger la place : ");
           Serial.println(String(atoi(TempPlace)));
+        } else if (command=='r') { // r
+          Serial.println("redemarrage");
         }
         Serial.println( "\n" );
       }

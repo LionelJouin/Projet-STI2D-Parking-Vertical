@@ -204,7 +204,9 @@ def menu(conn, addr):
         print("(4) badge accepté (entrant)")
         print("(5) badge refusé")
         print("(6) place")
-        q = int(input())
+        q = ""
+        while q=="":
+            q = int(input())
         if connected==1:
             a = 0
             if q == 1:
@@ -242,7 +244,9 @@ def menu(conn, addr):
                 print('')
 
             if q == 2:
-                a = int(input())
+                a = ""
+                while a=="":
+                    a = int(input())
                 print('PLACES ACTIVES : '+str(place_active[a]))
                 print('PLACES DISPO : '+str(place_dispo[a]))
                 print('PLACES PREDEFINIES : '+str(place_predef[a]))
@@ -252,7 +256,9 @@ def menu(conn, addr):
                 etat = "u1"
                 #code = "U0000c2f7ee"
                 #place = "S2"
-                a = int(input())
+                a = ""
+                while a=="":
+                    a = int(input())
                 code = "U"+listcode[a]
                 place = "S"+str(a)
                 etates = "s1"
@@ -268,7 +274,9 @@ def menu(conn, addr):
                 etat = "u1"
                 #code = "U0000c2f7ee"
                 place = "S2"
-                a = int(input())
+                a = ""
+                while a=="":
+                    a = int(input())
                 code = "U"+listcode[a]
                 place = "S"+str(a)
                 etates = "s0"
@@ -294,7 +302,9 @@ def menu(conn, addr):
                 etat = ""
                 etates = ""
 
-                a = int(input())
+                a = ""
+                while a=="":
+                    a = int(input())
 
                 if place_predef[a]==1: # si la place est predefinie
 

@@ -68,8 +68,47 @@ size_parameters = size_parameter[0][0]
 
 nb_parameters = 3
 
-parameters_name = ["ip", "port", "etat_parking"]
-parameters_value = ["192.168.1.200", "1337", "0"]
+parameters_name = [
+"ip", 
+"port", 
+"etat_parking", 
+"color_header", 
+"color_text", 
+"color_menu", 
+"color_menu_button", 
+"color_menu_button_select", 
+"color_menu_button_over",
+"color_menu_text",
+"color_submenu", 
+"color_submenu_button", 
+"color_submenu_button_select", 
+"color_submenu_button_over",
+"color_submenu_text", 
+"color_footer", 
+"color_footer_text", 
+"color_content",
+]
+parameters_value = [
+"192.168.1.200", 
+"1337", 
+"0", 
+"#292929", # header
+"#ecf0f1", 
+"#333333", # menu
+"#333333",
+"#2ecc71",
+"#1C1C1C",
+"#ecf0f1", 
+"#bdc3c7", # submenu
+"#bdc3c7",
+"#afb5b8",
+"#afb5b8",
+"#333333",
+"#292929", # footer
+"#bdc3c7",
+"#ecf0f1", # content
+"",
+]
 
 # 0 ip
 # 1 port

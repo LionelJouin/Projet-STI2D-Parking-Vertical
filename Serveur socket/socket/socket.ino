@@ -7,8 +7,10 @@
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x9E, 0x24 };
 byte ip[] = { 172,18,41,50 };
 
-char *TempPlace = "";
-char *TempCode = "";
+//char *TempPlace = "";
+//char *TempCode = "";
+char TempPlace[2];
+char TempCode[9];
 int aa = 0;
 
 // Initialize the Ethernet server library
@@ -45,30 +47,27 @@ void loop() {
         char command = client.read();
         //Serial.write(command);
         if (command=='Z') { // Z0100b87a09
-          free(TempCode);
-          char *TempCode = "";
           int aa = 0;
           while (aa<10) {
             TempCode[aa] = client.read();
             aa++;
           }
           Serial.print("Ajoute un code : ");
-          Serial.print(String(TempCode));
+          Serial.print(TempCode);
           Serial.print( "\n" );
         } else if (command=='z') { // z0100b87a09
-          free(TempCode);
-          char *TempCode = "";
-          int aa = 0;
+          int aa = 0; 
           while (aa<10) {
             TempCode[aa] = client.read();
             aa++;
           }
           Serial.print("Supprime un code : ");
-          Serial.print(String(TempCode));
+          Serial.print(TempCode);
           Serial.print( "\n" );
         } else if (command=='Y') { // Y12
           free(TempPlace);
           char *TempPlace = "";
+          memset(TempPlace, 0, sizeof(TempPlace));
           char TempVar;
           int aa = 0;
           TempPlace[0] = client.read();
@@ -77,10 +76,11 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("Active la place : ");
-          Serial.println(String(atoi(TempPlace)));
+          Serial.println(TempPlace);
         } else if (command=='y') { // y12
           free(TempPlace);
           char *TempPlace = "";
+          memset(TempPlace, 0, sizeof(TempPlace));
           char TempVar;
           int aa = 0;
           TempPlace[0] = client.read();
@@ -89,7 +89,7 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("desactive la place : ");
-          Serial.println(String(atoi(TempPlace)));
+          Serial.println(TempPlace);
         } else if (command=='X') { // X
           Serial.println("Active le parking");
         } else if (command=='x') { // x
@@ -114,7 +114,7 @@ void loop() {
           Serial.println("Associe le badge : ");
           Serial.println(String(TempCode));
           Serial.println(" à la place : ");
-          Serial.println(String(atoi(TempPlace)));
+          Serial.println(TempPlace);
         } else if (command=='w') { // w0100b87a0912
           free(TempCode);
           char *TempCode = "";
@@ -133,9 +133,9 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("Enlever l'association du badge : ");
-          Serial.println(String(TempCode));
+          Serial.println(TempCode);
           Serial.println(" à la place : ");
-          Serial.println(String(atoi(TempPlace)));
+          Serial.println(atoi(TempPlace));
         } else if (command=='V') { // V0100b87a0912
           free(TempCode);
           char *TempCode = "";
@@ -154,9 +154,9 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("la place : ");
-          Serial.println(String(TempCode));
+          Serial.println(TempCode);
           Serial.println("est prise par le badge : ");
-          Serial.println(String(atoi(TempPlace)));
+          Serial.println(TempPlace);
         } else if (command=='v') { // v12
           free(TempPlace);
           char *TempPlace = "";
@@ -168,7 +168,7 @@ void loop() {
             TempPlace[1] = TempVar;
           }
           Serial.println("decharger la place : ");
-          Serial.println(String(atoi(TempPlace)));
+          Serial.println(atoi(TempPlace));
         } else if (command=='r') { // r
           Serial.println("redemarrage");
         }

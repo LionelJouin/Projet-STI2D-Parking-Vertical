@@ -8,7 +8,7 @@ s.connect(("172.18.41.100", 1337))
 
 # ENVOYER
 # Z : Envoyer un nouveau code                       Z0100b87a09
-# z : Supprimer un code                             Z0100b87a09
+# z : Supprimer un code                             z0100b87a09
 # Y : Activer une place du parking                  Y12
 # y : Desactiver une place du parking               y12
 # X : Activer le parking                            X

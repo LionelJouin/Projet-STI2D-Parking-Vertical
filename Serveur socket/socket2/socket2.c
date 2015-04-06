@@ -7,8 +7,10 @@
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x9E, 0x24 };
 byte ip[] = { 172,18,41,50 };
 
-char *TempPlace = "";
-char *TempCode = "";
+//char *TempPlace = "";
+//char *TempCode = "";
+char TempPlace[2];
+char TempCode[10];
 int aa = 0;
 
 // Initialize the Ethernet server library
@@ -41,67 +43,136 @@ void loop() {
     boolean currentLineIsBlank = true;
     while (client.connected()) {
       if (client.available()) {
-        //Serial.print( "gfhtgf" );
-        //char c = client.read();
-        //Serial.write(c);
-        /*if (c=='Y') {
-          char cs = client.read();
-          char d = client.read();
-          Serial.write(c);
-          Serial.write(cs);
-          if(d != (char)-1) {
-            Serial.write(d);
-          }
-          }*/
           
         char command = client.read();
+        //Serial.write(command);
         if (command=='Z') { // Z0100b87a09
-          TempCode = "";
-          aa = 0;
-          Serial.print("Ajoute un code");
-        } else if (command=='z') { // z0100b87a09
-          TempCode = "";
-          aa = 0;
-          Serial.print("Supprime un code");
-        } else if (command=='Y') { // Y12
-          TempPlace = "";
-          aa = 0;
-          char d = client.read();
-          strcat(TempPlace,d);
-          char d = client.read();
-          if(d != (char)-1) {
-            strcat(TempPlace,d);
+          int aa = 0;
+          while (aa<10) {
+            TempCode[aa] = client.read();
+            aa++;
           }
-          Serial.print("Active une place");
+          Serial.print("Ajoute un code : ");
+          Serial.print(TempCode);
+          Serial.print( "\n" );
+        } else if (command=='z') { // z0100b87a09
+          int aa = 0; 
+          while (aa<10) {
+            TempCode[aa] = client.read();
+            aa++;
+          }
+          Serial.print("Supprime un code : ");
+          Serial.print(TempCode);
+          Serial.print( "\n" );
+        } else if (command=='Y') { // Y12
+          free(TempPlace);
+          char *TempPlace = "";
+          memset(TempPlace, 0, sizeof(TempPlace));
+          char TempVar;
+          int aa = 0;
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.println("Active la place : ");
+          Serial.println(TempPlace);
         } else if (command=='y') { // y12
-          TempPlace = "";
-          aa = 0;
-          Serial.print("desactive une place");
+          free(TempPlace);
+          char *TempPlace = "";
+          memset(TempPlace, 0, sizeof(TempPlace));
+          char TempVar;
+          int aa = 0;
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.println("desactive la place : ");
+          Serial.println(TempPlace);
         } else if (command=='X') { // X
-          Serial.print("Active le parking");
+          Serial.println("Active le parking");
         } else if (command=='x') { // x
-          Serial.print("desactive le parking");
+          Serial.println("desactive le parking");
         } else if (command=='W') { // W0100b87a0912
-          TempPlace = "";
-          TempCode = "";
+          free(TempCode);
+          char *TempCode = "";
+          int aa = 0;
+          while (aa<10) {
+            TempCode[aa] = client.read();
+            aa++;
+          }
+          free(TempPlace);
+          char *TempPlace = "";
+          char TempVar;
           aa = 0;
-          Serial.print("Associe un badge a une place");
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.println("Associe le badge : ");
+          Serial.println(String(TempCode));
+          Serial.println(" à la place : ");
+          Serial.println(TempPlace);
         } else if (command=='w') { // w0100b87a0912
-          TempPlace = "";
-          TempCode = "";
+          free(TempCode);
+          char *TempCode = "";
+          int aa = 0;
+          while (aa<10) {
+            TempCode[aa] = client.read();
+            aa++;
+          }
+          free(TempPlace);
+          char *TempPlace = "";
+          char TempVar;
           aa = 0;
-          Serial.print("Enlever l'association d'un badge a une place");
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.println("Enlever l'association du badge : ");
+          Serial.println(TempCode);
+          Serial.println(" à la place : ");
+          Serial.println(atoi(TempPlace));
         } else if (command=='V') { // V0100b87a0912
-          TempPlace = "";
-          TempCode = "";
+          free(TempCode);
+          char *TempCode = "";
+          int aa = 0;
+          while (aa<10) {
+            TempCode[aa] = client.read();
+            aa++;
+          }
+          free(TempPlace);
+          char *TempPlace = "";
+          char TempVar;
           aa = 0;
-          Serial.write("place prise");
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.println("la place : ");
+          Serial.println(TempCode);
+          Serial.println("est prise par le badge : ");
+          Serial.println(TempPlace);
         } else if (command=='v') { // v12
-          TempPlace = "";
-          aa = 0;
-          Serial.print("decharger la place");
+          free(TempPlace);
+          char *TempPlace = "";
+          char TempVar;
+          int aa = 0;
+          TempPlace[0] = client.read();
+          TempVar = client.read();
+          if(TempVar != (char)-1) {
+            TempPlace[1] = TempVar;
+          }
+          Serial.println("decharger la place : ");
+          Serial.println(atoi(TempPlace));
+        } else if (command=='r') { // r
+          Serial.println("redemarrage");
         }
-        Serial.print( "\n" );
+        Serial.println( "\n" );
       }
     }
     // give the web browser time to receive the data

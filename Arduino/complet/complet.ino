@@ -9,11 +9,9 @@
 
 int PlacesActives[15]={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}; // 1: active | 0: non active
 int PlacesDispos[15]={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};  // 1: disponible | 0: non disponible
-int PlacesPredef[15]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; // 1: predefinie | 0: non predefinie
+int PlacesPredef[15]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};  // 1: predefinie | 0: non predefinie
 char PlacesCodes[15][11]={"0000000000","0000000000","0000000000","0000000000","0000000000","0000000000","0000000000","0000000000","0000000000","0000000000","0000000000","0000000000","0000000000","0000000000","0000000000"}; // code attribuer a chaques places | 0000000000: aucun code
 int PlaceDuCode_PlacesCodes = 1000;
-
-int Etat_Parking = 1; // 1: parking actif | 0: parking desactive
 
 int PlacesParking[15]={31,41,51,33,34,35,43,32,54,53,52,44,45,55,42};
 
@@ -34,6 +32,7 @@ char TempPlace[3];
 char TempCode[11];
 int aa = 0;
 int badgedetecte = 0;
+int EtatConfig = 0;
 EthernetServer server(1337);
 
 void setup() {
@@ -58,34 +57,35 @@ void setup() {
 
 void loop() {
   
-  if(Etat_Parking==1) {
-    if(Serial1.available() > 0) {         // Si il y a des données dans le lecteur         
-      if((val = Serial1.read()) == 10) {  // Lire les données, si il y a déja un code >
-        badge = 0;                        // > le remettre à 0
-        while(badge<10) {                 // Tant que le code est inférieur à 10 octects           
-          if( Serial1.available() > 0) {  // Si il y a des données à lire
-            val = Serial1.read();         // on lit ces données et on les stock dans VAL
-            code[badge] = val;            // écrire dans la variable code, la valeur des 10 octets        
-            badge++;                      // incremente badge afin d'obtenir 10 octets 
-          } 
-        }
-        code[11] = '\0'; 
-        if(badge == 10) {                     // Une fois qu'on a lu les 10 octects           
-          Serial1.print("Code d'acces : ");   // ecrire : code d'acces dans le moniteur
-          Serial1.println(code);              // ecrire a la suite le code du badge
-          Etat_Parking = 0;
-          digitalWrite(PinLecteur, HIGH);      // Désactive le lecteur de badge
-          CodeDetecte(code);
-          digitalWrite(PinLecteur, LOW);       // lecteur de nouveau prêt à lire
+  if(Serial1.available() > 0) {         // Si il y a des données dans le lecteur         
+    if((val = Serial1.read()) == 10) {  // Lire les données, si il y a déja un code >
+      badge = 0;                        // > le remettre à 0
+      while(badge<10) {                 // Tant que le code est inférieur à 10 octects           
+        if( Serial1.available() > 0) {  // Si il y a des données à lire
+          val = Serial1.read();         // on lit ces données et on les stock dans VAL
+          code[badge] = val;            // écrire dans la variable code, la valeur des 10 octets        
+          badge++;                      // incremente badge afin d'obtenir 10 octets 
         } 
-        badge = 0;                            // remettre le badge à 0
+      }
+      code[11] = '\0'; 
+      if(badge == 10) {                     // Une fois qu'on a lu les 10 octects           
+        Serial1.print("Code d'acces : ");   // ecrire : code d'acces dans le moniteur
+        Serial1.println(code);              // ecrire a la suite le code du badge
+        digitalWrite(PinLecteur, HIGH);     // Désactive le lecteur de badge
+        CodeDetecte(code);
+        digitalWrite(PinLecteur, LOW);      // lecteur de nouveau prêt à lire
       } 
-    }
-  }  
+      badge = 0;                            // remettre le badge à 0
+    } 
+  }
   
   
   EthernetClient client = server.available();
   if (client) {
+    if (EtatConfig==0) {
+      EthernetConfig(0);
+      EtatConfig = 1;
+    }
     if (client.connected()) {
       if (client.available()) {
         char command = client.read(); // lit la commande
@@ -197,7 +197,6 @@ void CodeDetecte(char code[10]) {
     EthernetSend("u0");
     bip(2);
   }
-  Etat_Parking = 1;
 }
 
 void EnvoieCommande(int place) {
@@ -265,7 +264,7 @@ ETHERNET
 ---------------------------------------------------------------------------
 */
 void EthernetRecv(EthernetClient client, char command) {
-  if (command=='Z') { // Z0100b87a09 - Envoyer un nouveau code
+  if (command=='Z') { // Z0100b87a09 - Envoyer un nouveau code- OUI
     int aa = 0;
     while (aa<10) {
       TempCode[aa] = client.read();
@@ -273,7 +272,7 @@ void EthernetRecv(EthernetClient client, char command) {
     }
     TempCode[11] = '\0';
     AjouteCodeAutorise(TempCode);
-  } else if (command=='z') { // z0100b87a09 - Supprimer un code
+  } else if (command=='z') { // z0100b87a09 - Supprimer un code - OUI
     int aa = 0; 
     while (aa<10) {
       TempCode[aa] = client.read();
@@ -281,7 +280,7 @@ void EthernetRecv(EthernetClient client, char command) {
     }
     TempCode[11] = '\0';
     SupprimeCodeAutorise(TempCode);
-  } else if (command=='Y') { // Y12 - Activer une place du parking
+  } else if (command=='Y') { // Y12 - Activer une place du parking - OUI
     char TempVar;
     TempPlace[0] = client.read();
     TempVar = client.read();
@@ -292,7 +291,7 @@ void EthernetRecv(EthernetClient client, char command) {
     }
     TempPlace[2] = '\0';
     PlacesActives[atoi(TempPlace)] = 1;
-  } else if (command=='y') { // y12 - Desactiver une place du parking
+  } else if (command=='y') { // y12 - Desactiver une place du parking - OUI
     char TempVar;
     TempPlace[0] = client.read();
     TempVar = client.read();
@@ -303,11 +302,11 @@ void EthernetRecv(EthernetClient client, char command) {
     }
     TempPlace[2] = '\0';
     PlacesActives[atoi(TempPlace)] = 0;
-  } else if (command=='X') { // X - Activer le parking
+  } else if (command=='X') { // X - Activer le parking - OUI
     digitalWrite(PinLecteur, LOW);
-  } else if (command=='x') { // x - Desactiver le parking
+  } else if (command=='x') { // x - Desactiver le parking - OUI
     digitalWrite(PinLecteur, HIGH);
-  } else if (command=='W') { // W0100b87a0912 - Associer un badge a une place
+  } else if (command=='W') { // W0100b87a0912 - Associer un badge a une place - OUI
     int aa = 0;
     while (aa<10) {
       TempCode[aa] = client.read();
@@ -326,7 +325,7 @@ void EthernetRecv(EthernetClient client, char command) {
     AjouteCodeAutorise(TempCode);
     PlacesPredef[atoi(TempPlace)] = 1;
     strcpy(PlacesCodes[atoi(TempPlace)], TempCode);
-  } else if (command=='w') { // w0100b87a0912 - Enlever l'association d'un badge a une place
+  } else if (command=='w') { // w0100b87a0912 - Enlever l'association d'un badge a une place - OUI
     int aa = 0;
     while (aa<10) {
       TempCode[aa] = client.read();
@@ -345,7 +344,7 @@ void EthernetRecv(EthernetClient client, char command) {
     TempPlace[2] = '\0';
     PlacesPredef[atoi(TempPlace)] = 0;
     strcpy(PlacesCodes[atoi(TempPlace)], "0000000000");
-  } else if (command=='V') { // V0100b87a0912 - Place prise
+  } else if (command=='V') { // V0100b87a0912 - Place prise - OUI
     int aa = 0;
     while (aa<10) {
       TempCode[aa] = client.read();
@@ -362,9 +361,9 @@ void EthernetRecv(EthernetClient client, char command) {
       TempPlace[1] = '\0';
     }
     TempPlace[2] = '\0';
-    Serial.println(TempCode);
-    Serial.println(TempPlace);
-  } else if (command=='v') { // v12 - decharger la place
+    strcpy(PlacesCodes[atoi(TempPlace)], TempCode);
+    PlacesDispos[atoi(TempPlace)] = 0;
+  } else if (command=='v') { // v12 - decharger la place - OUI
     char TempVar;
     TempPlace[0] = client.read();
     TempVar = client.read();
@@ -374,8 +373,10 @@ void EthernetRecv(EthernetClient client, char command) {
       TempPlace[1] = '\0';
     }
     TempPlace[2] = '\0';
-    Serial.println(atoi(TempPlace));
-  } else if (command=='r') { // r - redemarrer le systeme
+    if (PlacesDispos[atoi(TempPlace)]==0) {
+      CodeDetecte(PlacesCodes[atoi(TempPlace)]);
+    }
+  } else if (command=='r') { // r - redemarrer le systeme - OUI
     pinMode(PinReset, OUTPUT); 
     digitalWrite(PinReset, LOW);
   }
@@ -389,5 +390,13 @@ void EthernetSend(String command) {
         client.println(command);
       }
     }
+  }
+}
+
+void EthernetConfig(int etat) {
+  if (etat==0) { // configuration non chargee, on demande un synchronisation
+    EthernetSend("R0");
+  } else if (etat==1) { // configuration chargee, on synchronise
+    EthernetSend("R1");
   }
 }

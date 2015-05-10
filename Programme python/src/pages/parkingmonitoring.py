@@ -174,7 +174,7 @@ def pm_createbloc(box , id, x, y):
 def pm_onObjectOver(box, id):
 	if is_place_active(id) == 0: # si la place est desactivé 
 		box.itemconfigure(pm_rectangle[id], fill='#212121')
-	elif is_place_predef(id) == 1: # si la place est desactivé 
+	elif is_place_predef(id) == 1: # si la place est predef 
 		box.itemconfigure(pm_rectangle[id], fill='#2980b9')
 	else: # si la place est activé
 		if is_place_dispo(id) == 0: # si la place est occupé
@@ -186,7 +186,7 @@ def pm_onObjectOver(box, id):
 def pm_onObjectOutOver(box, id):
 	if is_place_active(id) == 0: # si la place est desactivé 
 		box.itemconfigure(pm_rectangle[id], fill='#333333')
-	elif is_place_predef(id) == 1: # si la place est desactivé 
+	elif is_place_predef(id) == 1: # si la place est predef 
 		box.itemconfigure(pm_rectangle[id], fill='#3498db')
 	else: # si la place est activé
 		if is_place_dispo(id) == 0: # si la place est occupé

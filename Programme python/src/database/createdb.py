@@ -87,6 +87,18 @@ parameters_name = [
 "color_footer", 
 "color_footer_text", 
 "color_content",
+"color_dispo",
+"color_dispo_over",
+"color_occup",
+"color_occup_over",
+"color_desac",
+"color_desac_over",
+"color_predef",
+"color_predef_over",
+"color_accep",
+"color_refus",
+"color_entran",
+"color_sortan",
 ]
 parameters_value = [
 "192.168.1.200", 
@@ -107,7 +119,18 @@ parameters_value = [
 "#292929", # footer
 "#bdc3c7",
 "#ecf0f1", # content
-"",
+"#",
+"#",
+"#",
+"#",
+"#",
+"#",
+"#",
+"#",
+"#",
+"#",
+"#",
+"#",
 ]
 
 # 0 ip

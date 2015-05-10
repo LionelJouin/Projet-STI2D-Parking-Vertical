@@ -60,6 +60,9 @@ class main:
 		# variable de chargement de l'application
 		set_checking_var('chargement', 1)
 
+		self.konami = 0
+		window.bind('<Key>', self.konamicode)
+
 		# boucle principal
 		window.mainloop()
 
@@ -87,3 +90,26 @@ class main:
 		print("x : "+str(event.width))
 		print("y : "+str(event.height))
 
+	def konamicode(self, event):
+		if str(event.keysym)=="Up" and self.konami==0:
+			self.konami = 1
+		elif  str(event.keysym)=="Up" and self.konami==1:
+			self.konami = 2
+		elif  str(event.keysym)=="Down" and self.konami==2:
+			self.konami = 3
+		elif  str(event.keysym)=="Down" and self.konami==3:
+			self.konami = 4
+		elif  str(event.keysym)=="Left" and self.konami==4:
+			self.konami = 5
+		elif  str(event.keysym)=="Right" and self.konami==5:
+			self.konami = 6
+		elif  str(event.keysym)=="Left" and self.konami==6:
+			self.konami = 7
+		elif  str(event.keysym)=="Right" and self.konami==7:
+			self.konami = 8
+		elif  str(event.keysym)=="b" and self.konami==8:
+			self.konami = 9
+		elif  str(event.keysym)=="a" and self.konami==9:
+			print("konami code")
+		else:
+			self.konami = 0

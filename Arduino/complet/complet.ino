@@ -158,8 +158,12 @@ void CodeDetecte(char code[10]) {
           EnvoieCommande(VerifieCodeParking(code));
           bip(1);
           EthernetClient client = server.available();
-          TempCodeSending = strcat("U", code); 
-          TempPlaceSending = strcat("S", VerifieCodeParking(code)); 
+          memset(TempCodeSending, 0, sizeof (TempCodeSending));
+          memset(TempPlaceSending, 0, sizeof (TempPlaceSending));
+          strcat(TempCodeSending, "U");
+          strcat(TempCodeSending, code); 
+          strcat(TempPlaceSending, "S");
+          strcat(TempPlaceSending, VerifieCodeParking(code)); 
           if (client) {
             if (client.connected()) {
               if (client.available()) {
@@ -178,8 +182,12 @@ void CodeDetecte(char code[10]) {
           PlacesDispos[VerifieCodeParking(code)] = 1;
           bip(1);
           EthernetClient client = server.available();
-          TempCodeSending = strcat("U", code); 
-          TempPlaceSending = strcat("S", VerifieCodeParking(code)); 
+          memset(TempCodeSending, 0, sizeof (TempCodeSending));
+          memset(TempPlaceSending, 0, sizeof (TempPlaceSending));
+          strcat(TempCodeSending, "U");
+          strcat(TempCodeSending, code); 
+          strcat(TempPlaceSending, "S");
+          strcat(TempPlaceSending, VerifieCodeParking(code)); 
           if (client) {
             if (client.connected()) {
               if (client.available()) {
@@ -202,8 +210,12 @@ void CodeDetecte(char code[10]) {
         SupprimeCodeParking(VerifieCodeParking(code));
         bip(1);
         EthernetClient client = server.available();
-        TempCodeSending = strcat("U", code); 
-        TempPlaceSending = strcat("S", VerifieCodeParking(code)); 
+        memset(TempCodeSending, 0, sizeof (TempCodeSending));
+        memset(TempPlaceSending, 0, sizeof (TempPlaceSending));
+        strcat(TempCodeSending, "U");
+        strcat(TempCodeSending, code); 
+        strcat(TempPlaceSending, "S");
+        strcat(TempPlaceSending, VerifieCodeParking(code)); 
         if (client) {
           if (client.connected()) {
             if (client.available()) {
@@ -230,8 +242,12 @@ void CodeDetecte(char code[10]) {
           bip(1);
           a = 15;
           EthernetClient client = server.available();
-          TempCodeSending = strcat("U", code); 
-          TempPlaceSending = strcat("S", VerifieCodeParking(code)); 
+          memset(TempCodeSending, 0, sizeof (TempCodeSending));
+          memset(TempPlaceSending, 0, sizeof (TempPlaceSending));
+          strcat(TempCodeSending, "U");
+          strcat(TempCodeSending, code); 
+          strcat(TempPlaceSending, "S");
+          strcat(TempPlaceSending, VerifieCodeParking(code)); 
           if (client) {
             if (client.connected()) {
               if (client.available()) {
@@ -255,7 +271,9 @@ void CodeDetecte(char code[10]) {
   } else { // code non valide
     bip(2);
     EthernetClient client = server.available();
-    TempCodeSending = strcat("U", code); 
+    memset(TempCodeSending, 0, sizeof (TempCodeSending));
+    strcat(TempCodeSending, "U");
+    strcat(TempCodeSending, code); 
     if (client) {
       if (client.connected()) {
         if (client.available()) {

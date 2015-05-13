@@ -25,7 +25,6 @@ int badge = 0;                              // définir la variable badge
 int buzzer = 9;                             // buzzer port 9
 int freq = 1800;                            // définir une fréquence égale à 1800Hz
 
-
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x9E, 0x24 };
 byte ip[] = { 172,18,41,50 };
 char TempPlace[3];
@@ -34,6 +33,9 @@ int aa = 0;
 int badgedetecte = 0;
 int EtatConfig = 0;
 EthernetServer server(1337);
+
+char TempCodeSending[11];
+char TempPlaceSending[3];
 
 void setup() {
   Serial.begin(9600);
@@ -52,6 +54,7 @@ void setup() {
   server.begin();
   Serial.print("server is at ");
   Serial.println(Ethernet.localIP());
+ 
 }
 
 
@@ -155,12 +158,17 @@ void CodeDetecte(char code[10]) {
           EnvoieCommande(VerifieCodeParking(code));
           bip(1);
           EthernetClient client = server.available();
+          TempCodeSending = strcat("U", code); 
+          TempPlaceSending = strcat("S", VerifieCodeParking(code)); 
           if (client) {
             if (client.connected()) {
               if (client.available()) {
-                EthernetSend(client, "U"+String(code));
-                EthernetSend(client, "S"+String(VerifieCodeParking(code)));
-                EthernetSend(client, "S1");
+                EthernetSend(client, TempCodeSending);
+                delay(50);
+                EthernetSend(client, TempPlaceSending);
+                delay(50);
+                EthernetSend(client, "s1");
+                delay(50);
                 EthernetSend(client, "u1");
               }
             }
@@ -170,13 +178,18 @@ void CodeDetecte(char code[10]) {
           PlacesDispos[VerifieCodeParking(code)] = 1;
           bip(1);
           EthernetClient client = server.available();
+          TempCodeSending = strcat("U", code); 
+          TempPlaceSending = strcat("S", VerifieCodeParking(code)); 
           if (client) {
             if (client.connected()) {
               if (client.available()) {
                 EnvoieCommande(VerifieCodeParking(code));
-                EthernetSend(client, "U"+String(code));
-                EthernetSend(client, "S"+String(VerifieCodeParking(code)));
-                EthernetSend(client, "S0");
+                EthernetSend(client, TempCodeSending);
+                delay(50);
+                EthernetSend(client, TempPlaceSending);
+                delay(50);
+                EthernetSend(client, "s0");
+                delay(50);
                 EthernetSend(client, "u1");
               }
             }
@@ -189,16 +202,23 @@ void CodeDetecte(char code[10]) {
         SupprimeCodeParking(VerifieCodeParking(code));
         bip(1);
         EthernetClient client = server.available();
+        TempCodeSending = strcat("U", code); 
+        TempPlaceSending = strcat("S", VerifieCodeParking(code)); 
         if (client) {
           if (client.connected()) {
             if (client.available()) {
-              EthernetSend(client, "U"+String(code));
-              EthernetSend(client, "S"+String(VerifieCodeParking(code)));
-              EthernetSend(client, "S0");
+              EthernetSend(client, TempCodeSending);
+              delay(50);
+              EthernetSend(client, TempPlaceSending);
+              delay(50);
+              EthernetSend(client, "s0");
+              delay(50);
               EthernetSend(client, "u1");
             }
           }
         }
+        TempCodeSending[11] = []; 
+        TempPlaceSending[3] = []; 
         // fin
       }
     } else { // voiture entrante
@@ -207,19 +227,27 @@ void CodeDetecte(char code[10]) {
           EnvoieCommande(a);
           PlacesDispos[a] = 0;
           AjouteCodeParking(code, a);
-          EthernetClient client = server.available();
           bip(1);
           a = 15;
+          EthernetClient client = server.available();
+          TempCodeSending = strcat("U", code); 
+          TempPlaceSending = strcat("S", VerifieCodeParking(code)); 
           if (client) {
             if (client.connected()) {
               if (client.available()) {
-                EthernetSend(client, "U"+String(code));
-                EthernetSend(client, "S"+String(VerifieCodeParking(code)));
-                EthernetSend(client, "S1");
+                //EthernetSend(client, String("U"+String(code)));
+                EthernetSend(client, TempCodeSending);
+                delay(50);
+                EthernetSend(client, TempPlaceSending);
+                delay(50);
+                EthernetSend(client, "s1");
+                delay(50);
                 EthernetSend(client, "u1");
               }
             }
           }
+          TempCodeSending[11] = []; 
+          TempPlaceSending[3] = []; 
           // fin
         }
       }
@@ -227,10 +255,12 @@ void CodeDetecte(char code[10]) {
   } else { // code non valide
     bip(2);
     EthernetClient client = server.available();
+    TempCodeSending = strcat("U", code); 
     if (client) {
       if (client.connected()) {
         if (client.available()) {
-          EthernetSend(client, "U"+String(code));
+          EthernetSend(client, TempCodeSending);
+          delay(50);
           EthernetSend(client, "u0");
         }
       }
@@ -449,14 +479,14 @@ void EthernetRecv(EthernetClient client, char command) {
 }
 
 void EthernetSend(EthernetClient client, String command) {
-  Serial.println("envoie de données");
-  client.println(command);
+  Serial.println("envoie de donnees");
+  client.print(command);
 }
 
 void EthernetConfig(int etat) {
   if (etat==0) { // configuration non chargee, on demande un synchronisation
-    EthernetSend("R0");
+    //EthernetSend("R0");
   } else if (etat==1) { // configuration chargee, on synchronise
-    EthernetSend("R1");
+    //EthernetSend("R1");
   }
 }

@@ -1,4 +1,5 @@
 import os
+import time
 import socket
 
 from src.style.funct import *
@@ -36,9 +37,11 @@ def se_connecter(ip, port):
 		entrantsortant = 2
 
 		if_connectedtosystem(1)
+		
 		while is_connectedtosystem()==1:
 			try:
-				data = s.recv(1024)
+				data = s.recv(1024)	
+				time.sleep(0.3)
 				if str(data, 'utf-8')!='0000':
 					print("-------------------------------------")
 					print("Données recu : ", str(data, 'utf-8'))

@@ -18,6 +18,7 @@ int PlacesParking[15]={31,41,51,33,34,35,43,32,54,53,52,44,45,55,42};
 char CodeAutoriser[NBCodes][11];
 int NombreCodes = 0;
 int PlaceDuCode_CodeAutoriser = 1000;
+int EtatParking = 1;
 
 int  val = 0;                               // définir la variable val
 char code[11];                              // code lu sur 10 octets
@@ -26,16 +27,20 @@ int buzzer = 9;                             // buzzer port 9
 int freq = 1800;                            // définir une fréquence égale à 1800Hz
 
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x0D, 0x9E, 0x24 };
-byte ip[] = { 172,18,41,50 };
+byte ip[] = { 172,18,41,99 };
 char TempPlace[3];
 char TempCode[11];
 int aa = 0;
 int badgedetecte = 0;
 int EtatConfig = 0;
 EthernetServer server(1337);
+EthernetClient client;
 
 char TempCodeSending[11];
 char TempPlaceSending[3];
+char dest[50] = "";
+char destint[2];
+int varplace;
 
 void setup() {
   Serial.begin(9600);
@@ -54,7 +59,7 @@ void setup() {
   server.begin();
   Serial.print("server is at ");
   Serial.println(Ethernet.localIP());
- 
+  
 }
 
 
@@ -75,7 +80,10 @@ void loop() {
         Serial1.print("Code d'acces : ");   // ecrire : code d'acces dans le moniteur
         Serial1.println(code);              // ecrire a la suite le code du badge
         digitalWrite(PinLecteur, HIGH);     // Désactive le lecteur de badge
-        CodeDetecte(code);
+        if (EtatParking==1) {
+          CodeDetecte(code);
+        }
+        EtatParking = 1;
         digitalWrite(PinLecteur, LOW);      // lecteur de nouveau prêt à lire
       } 
       badge = 0;                            // remettre le badge à 0
@@ -150,120 +158,111 @@ GESTION PARKING
 ---------------------------------------------------------------------------
 */
 void CodeDetecte(char code[10]) {
+  varplace = VerifieCodeParking(code);
+  EtatParking = 0;
+  Serial.println("----------------------");
+  Serial.print("koukou : ");
+  Serial.println(varplace);
   if (VerifieCodeAutorise(code)!=1000) {
-    if (VerifieCodeParking(code)!=1000) { // voiture sortante ou place predef
-      if (PlacesPredef[VerifieCodeParking(code)]==1) { // place predef
-        if (PlacesDispos[VerifieCodeParking(code)]==1) { // voiture place predef entrante
-          PlacesDispos[VerifieCodeParking(code)] = 0;
-          EnvoieCommande(VerifieCodeParking(code));
+    if (varplace!=1000) { // voiture sortante ou place predef
+      if (PlacesPredef[varplace]==1) { // place predef
+        if (PlacesDispos[varplace]==1) { // voiture place predef entrante
+          Serial.println("Voiture predef entrante");
+          PlacesDispos[varplace] = 0;
+          EnvoieCommande(varplace);
           bip(1);
           EthernetClient client = server.available();
-          memset(TempCodeSending, 0, sizeof (TempCodeSending));
-          memset(TempPlaceSending, 0, sizeof (TempPlaceSending));
-          strcat(TempCodeSending, "U");
-          strcat(TempCodeSending, code); 
-          strcat(TempPlaceSending, "S");
-          strcat(TempPlaceSending, VerifieCodeParking(code)); 
-          if (client) {
-            if (client.connected()) {
-              if (client.available()) {
-                EthernetSend(client, TempCodeSending);
-                delay(50);
-                EthernetSend(client, TempPlaceSending);
-                delay(50);
-                EthernetSend(client, "s1");
-                delay(50);
-                EthernetSend(client, "u1");
-              }
-            }
-          }
+          memset (dest, 0, sizeof (dest));
+          dest[0] = 'U';
+          strcat(dest, code);
+          EthernetSend(client, " "); 
+          delay(500);
+          EthernetSend(client, dest);
+          delay(500);
+          memset (dest, 0, sizeof (dest));
+          dest[0] = 'S';
+          sprintf(destint, "%d", int(varplace));
+          strcat(dest, destint);
+          EthernetSend(client, dest);  
+          delay(500);
+          EthernetSend(client, "s0");
+          delay(500);
+          EthernetSend(client, "u1");
           // fin
         } else { // voiture place predef sortante
+          Serial.println("Voiture predef sortante");
           PlacesDispos[VerifieCodeParking(code)] = 1;
+          EnvoieCommande(varplace);
           bip(1);
           EthernetClient client = server.available();
-          memset(TempCodeSending, 0, sizeof (TempCodeSending));
-          memset(TempPlaceSending, 0, sizeof (TempPlaceSending));
-          strcat(TempCodeSending, "U");
-          strcat(TempCodeSending, code); 
-          strcat(TempPlaceSending, "S");
-          strcat(TempPlaceSending, VerifieCodeParking(code)); 
-          if (client) {
-            if (client.connected()) {
-              if (client.available()) {
-                EnvoieCommande(VerifieCodeParking(code));
-                EthernetSend(client, TempCodeSending);
-                delay(50);
-                EthernetSend(client, TempPlaceSending);
-                delay(50);
-                EthernetSend(client, "s0");
-                delay(50);
-                EthernetSend(client, "u1");
-              }
-            }
-          }
-          // fin
+          memset (dest, 0, sizeof (dest));
+          dest[0] = 'U';
+          strcat(dest, code);
+          EthernetSend(client, " "); 
+          delay(500);
+          EthernetSend(client, dest);
+          delay(500);
+          memset (dest, 0, sizeof (dest));
+          dest[0] = 'S';
+          sprintf(destint, "%d", int(varplace));
+          strcat(dest, destint);
+          EthernetSend(client, dest);  
+          delay(500);
+          EthernetSend(client, "s1");
+          delay(500);
+          EthernetSend(client, "u1");
         }
       } else { // voiture sortante 
-        PlacesDispos[VerifieCodeParking(code)] = 1;
-        EnvoieCommande(VerifieCodeParking(code));
-        SupprimeCodeParking(VerifieCodeParking(code));
+        Serial.println("Voiture sortante");
+        PlacesDispos[varplace] = 1;
+        EnvoieCommande(varplace);
+        SupprimeCodeParking(varplace);
         bip(1);
         EthernetClient client = server.available();
-        memset(TempCodeSending, 0, sizeof (TempCodeSending));
-        memset(TempPlaceSending, 0, sizeof (TempPlaceSending));
-        strcat(TempCodeSending, "U");
-        strcat(TempCodeSending, code); 
-        strcat(TempPlaceSending, "S");
-        strcat(TempPlaceSending, VerifieCodeParking(code)); 
-        if (client) {
-          if (client.connected()) {
-            if (client.available()) {
-              EthernetSend(client, TempCodeSending);
-              delay(50);
-              EthernetSend(client, TempPlaceSending);
-              delay(50);
-              EthernetSend(client, "s0");
-              delay(50);
-              EthernetSend(client, "u1");
-            }
-          }
-        }
-        TempCodeSending[11] = []; 
-        TempPlaceSending[3] = []; 
+        memset (dest, 0, sizeof (dest));
+        dest[0] = 'U';
+        strcat(dest, code);
+        EthernetSend(client, " "); 
+        delay(500);
+        EthernetSend(client, dest);
+        delay(500);
+        memset (dest, 0, sizeof (dest));
+        dest[0] = 'S';
+        sprintf(destint, "%d", int(varplace));
+        strcat(dest, destint);
+        EthernetSend(client, dest);  
+        delay(500);
+        EthernetSend(client, "s1");
+        delay(500);
+        EthernetSend(client, "u1");
         // fin
       }
     } else { // voiture entrante
       for(int a = 0;a<15;a++) { // cherche une place
-        if(PlacesPredef[a]==0 && PlacesDispos[a]==1 && PlacesActives[a]==1) { // place trouvee
+        if(PlacesPredef[a]==0 && PlacesDispos[a]==1 && PlacesActives[a]==1) { // place trouvee          
+          Serial.println("Voiture entrante");
           EnvoieCommande(a);
           PlacesDispos[a] = 0;
           AjouteCodeParking(code, a);
           bip(1);
-          a = 15;
           EthernetClient client = server.available();
-          memset(TempCodeSending, 0, sizeof (TempCodeSending));
-          memset(TempPlaceSending, 0, sizeof (TempPlaceSending));
-          strcat(TempCodeSending, "U");
-          strcat(TempCodeSending, code); 
-          strcat(TempPlaceSending, "S");
-          strcat(TempPlaceSending, VerifieCodeParking(code)); 
-          if (client) {
-            if (client.connected()) {
-              if (client.available()) {
-                //EthernetSend(client, String("U"+String(code)));
-                EthernetSend(client, TempCodeSending);
-                delay(50);
-                EthernetSend(client, TempPlaceSending);
-                delay(50);
-                EthernetSend(client, "s1");
-                delay(50);
-                EthernetSend(client, "u1");
-              }
-            }
-          }
-          TempCodeSending[11] = []; 
-          TempPlaceSending[3] = []; 
+          memset (dest, 0, sizeof (dest));
+          dest[0] = 'U';
+          strcat(dest, code);
+          EthernetSend(client, " "); 
+          delay(500);
+          EthernetSend(client, dest);
+          delay(500);
+          memset (dest, 0, sizeof (dest));
+          dest[0] = 'S';
+          sprintf(destint, "%d", a);
+          strcat(dest, destint);
+          EthernetSend(client, dest);  
+          delay(500);
+          EthernetSend(client, "s0");
+          delay(500);
+          EthernetSend(client, "u1");
+          a = 15;
           // fin
         }
       }
@@ -271,20 +270,18 @@ void CodeDetecte(char code[10]) {
   } else { // code non valide
     bip(2);
     EthernetClient client = server.available();
-    memset(TempCodeSending, 0, sizeof (TempCodeSending));
-    strcat(TempCodeSending, "U");
-    strcat(TempCodeSending, code); 
-    if (client) {
-      if (client.connected()) {
-        if (client.available()) {
-          EthernetSend(client, TempCodeSending);
-          delay(50);
-          EthernetSend(client, "u0");
-        }
-      }
-    }
+    Serial.println("code non valide");
+    memset (dest, 0, sizeof (dest));
+    dest[0] = 'U';
+    strcat(dest, code);
+    EthernetSend(client, " ");
+    delay(500);
+    EthernetSend(client, dest);
+    delay(500);
+    EthernetSend(client, "u0");
     // fin
   }
+  Serial.println("----------------------");
 }
 
 void EnvoieCommande(int place) {
@@ -385,8 +382,9 @@ void EthernetRecv(EthernetClient client, char command) {
     }
     TempPlace[2] = '\0';
     PlacesActives[atoi(TempPlace)] = 1;
-    Serial.println("Active la place : ");
-    Serial.println(TempPlace);
+    Serial.print("Active la place : ");
+    Serial.print(TempPlace);
+    Serial.print(" : ");
     Serial.println(NombreCodes);
   } else if (command=='y') { // y12 - Desactiver une place du parking - OUI
     char TempVar;
@@ -487,7 +485,7 @@ void EthernetRecv(EthernetClient client, char command) {
     }
     TempPlace[2] = '\0';
     if (PlacesDispos[atoi(TempPlace)]==0) {
-      CodeDetecte(PlacesCodes[atoi(TempPlace)]);
+      //CodeDetecte(PlacesCodes[atoi(TempPlace)]);
     }
   } else if (command=='r') { // r - redemarrer le systeme - OUI
     pinMode(PinReset, OUTPUT); 
@@ -497,8 +495,11 @@ void EthernetRecv(EthernetClient client, char command) {
 }
 
 void EthernetSend(EthernetClient client, String command) {
-  Serial.println("envoie de donnees");
-  client.print(command);
+  //EthernetClient client = server.available();
+  //Serial.println("envoie de donnees");
+  Serial.println(command);
+  server.print(command);
+  //client.print(command);
 }
 
 void EthernetConfig(int etat) {

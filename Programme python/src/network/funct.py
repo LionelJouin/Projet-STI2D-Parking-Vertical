@@ -38,6 +38,8 @@ def se_connecter(ip, port):
 
 		if_connectedtosystem(1)
 		
+		envoyer('q')
+
 		while is_connectedtosystem()==1:
 			try:
 				data = s.recv(1024)	

@@ -19,6 +19,7 @@ char CodeAutoriser[NBCodes][11];
 int NombreCodes = 0;
 int PlaceDuCode_CodeAutoriser = 1000;
 int EtatParking = 1;
+int ConfigLoad = 1;
 
 int  val = 0;                               // définir la variable val
 char code[11];                              // code lu sur 10 octets
@@ -491,6 +492,9 @@ void EthernetRecv(EthernetClient client, char command) {
     pinMode(PinReset, OUTPUT); 
     digitalWrite(PinReset, LOW);
     Serial.println("redemarrage");
+  } else if (command=='q') {
+    EthernetConfig(ConfigLoad);
+    ConfigLoad = 1;
   }
 }
 
@@ -504,8 +508,8 @@ void EthernetSend(EthernetClient client, String command) {
 
 void EthernetConfig(int etat) {
   if (etat==0) { // configuration non chargee, on demande un synchronisation
-    //EthernetSend("R0");
+    EthernetSend("R0");
   } else if (etat==1) { // configuration chargee, on synchronise
-    //EthernetSend("R1");
+    EthernetSend("R1");
   }
 }

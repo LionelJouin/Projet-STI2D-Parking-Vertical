@@ -19,7 +19,8 @@ char CodeAutoriser[NBCodes][11];
 int NombreCodes = 0;
 int PlaceDuCode_CodeAutoriser = 1000;
 int EtatParking = 1;
-int ConfigLoad = 1;
+int EtatParkingCount = 10000;
+int ConfigLoad = 0;
 
 int  val = 0;                               // définir la variable val
 char code[11];                              // code lu sur 10 octets
@@ -74,6 +75,7 @@ void loop() {
           val = Serial1.read();         // on lit ces données et on les stock dans VAL
           code[badge] = val;            // écrire dans la variable code, la valeur des 10 octets        
           badge++;                      // incremente badge afin d'obtenir 10 octets 
+          //EtatParking = 1;
         } 
       }
       code[11] = '\0'; 
@@ -82,15 +84,22 @@ void loop() {
         Serial1.println(code);              // ecrire a la suite le code du badge
         digitalWrite(PinLecteur, HIGH);     // Désactive le lecteur de badge
         if (EtatParking==1) {
+          //EtatParking = 0;
           CodeDetecte(code);
+          EtatParkingCount = 0;
         }
-        EtatParking = 1;
         digitalWrite(PinLecteur, LOW);      // lecteur de nouveau prêt à lire
       } 
       badge = 0;                            // remettre le badge à 0
     } 
   }
   
+  if (EtatParkingCount<3000) {
+    EtatParking = 0;
+    EtatParkingCount++;
+  } else {
+    EtatParking = 1;
+  }
   
   EthernetClient client = server.available();
   if (client) {
@@ -263,7 +272,7 @@ void CodeDetecte(char code[10]) {
           EthernetSend(client, "s0");
           delay(500);
           EthernetSend(client, "u1");
-          a = 15;
+          a = 16;
           // fin
         }
       }
@@ -385,7 +394,7 @@ void EthernetRecv(EthernetClient client, char command) {
     PlacesActives[atoi(TempPlace)] = 1;
     Serial.print("Active la place : ");
     Serial.print(TempPlace);
-    Serial.print(" : ");
+    Serial.print(" | nombre de code : ");
     Serial.println(NombreCodes);
   } else if (command=='y') { // y12 - Desactiver une place du parking - OUI
     char TempVar;
@@ -398,8 +407,10 @@ void EthernetRecv(EthernetClient client, char command) {
     }
     TempPlace[2] = '\0';
     PlacesActives[atoi(TempPlace)] = 0;
-    Serial.println("desactive la place : ");
-    Serial.println(TempPlace);
+    Serial.print("desactive la place : ");
+    Serial.print(TempPlace);
+    Serial.print(" | nombre de code : ");
+    Serial.println(NombreCodes);
   } else if (command=='X') { // X - Activer le parking - OUI
     digitalWrite(PinLecteur, LOW);
     Serial.println("Active le parking");
@@ -514,4 +525,5 @@ void EthernetSend(EthernetClient client, String command) {
   server.print(command);
   //client.print(command);
 }
+
 

@@ -25,6 +25,7 @@ char CodeAutoriser[NBCodes][11];
 int NombreCodes = 0;
 int PlaceDuCode_CodeAutoriser = 1000;
 int EtatParking = 1;
+int EtatParkingCount = 10000;
 int ConfigLoad = 0;
 
 int  val = 0;                               // définir la variable val
@@ -160,7 +161,7 @@ void loop() {
         digitalWrite(PinLecteur, HIGH);     // Désactive le lecteur de badge
         if (EtatParking == 1) {
           CodeDetecte(code);
-          badge = 0;
+          EtatParkingCount = 0;
         }
         digitalWrite(PinLecteur, LOW);      // lecteur de nouveau prêt à lire
         EtatParking = 1;
@@ -168,7 +169,13 @@ void loop() {
       badge = 0;                            // remettre le badge à 0
     }
   }
-
+  
+  if (EtatParkingCount<3000) {
+    EtatParking = 0;
+    EtatParkingCount++;
+  } else {
+    EtatParking = 1;
+  }
 
   EthernetClient client = server.available();
   if (client) {
@@ -458,7 +465,10 @@ void CodeDetecte(char code[10]) {
         EthernetSend(client, dest);
         delay(500);
         memset (dest, 0, sizeof (dest));
+        memset (destint, 0, sizeof (destint));
         dest[0] = 'S';
+        Serial.print("taille de la place : ");
+        Serial.println(strlen(destint));
         sprintf(destint, "%d", int(varplace));
         strcat(dest, destint);
         EthernetSend(client, dest);
@@ -479,6 +489,7 @@ void CodeDetecte(char code[10]) {
           bip(1);
           EthernetClient client = server.available();
           memset (dest, 0, sizeof (dest));
+          memset (destint, 0, sizeof (destint));
           dest[0] = 'U';
           strcat(dest, code);
           EthernetSend(client, " ");
@@ -488,6 +499,8 @@ void CodeDetecte(char code[10]) {
           memset (dest, 0, sizeof (dest));
           dest[0] = 'S';
           sprintf(destint, "%d", a);
+          Serial.print("taille de la place : ");
+          Serial.println(strlen(destint));
           strcat(dest, destint);
           EthernetSend(client, dest);
           delay(500);
